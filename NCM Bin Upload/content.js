@@ -48,3 +48,5 @@ waitForElementToDisplay('button-1060', 5000)
 //Todo - Make function to grab the router ID you have selected
 
 //Todo - Make function that uses your ncm keys/session cookies/whatever to send a put and upload your bin to the router ID
+
+//Todo - Add all features to the cradlepointecm.com/groups page
