@@ -31,9 +31,28 @@ function addListener() {
 	
 	//adds custom div 
 	configuration.addEventListener('click', function(){
-		document.getElementById("menu-1061-targetEl").insertBefore(div, null);
+		redrawDropdown()
 	});
 }
+
+
+//Redraw the Configuration Dropdown 
+function redrawDropdown () {
+	//Add new Div
+	dropdown = document.getElementById("menu-1061-targetEl");
+		dropdown.innerHTML += `
+			<div class="x-component x-box-item x-component-default x-menu-item" id="menuitem-1099" style="right: auto; left: 0px; top: 224px; margin: 0px; width: 163px;">
+				<a id="menuitem-1073-itemEl" class="x-menu-item-link" href="#" hidefocus="true" unselectable="on" data-qtip="">
+					<div role="img" id="menuitem-1073-iconEl" class="x-menu-item-icon gear-icon " style="">
+					</div>
+					<span id="menuitem-1073-textEl" class="x-menu-item-text" unselectable="on">Test?</span>
+					<img id="menuitem-1073-arrowEl" src="data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" class="">
+				</a>
+			</div>
+		`
+}
+
+
 
 //Wait for the Configuration botton to appear and then add div to the menu
 waitForElementToDisplay('button-1060', 5000)
