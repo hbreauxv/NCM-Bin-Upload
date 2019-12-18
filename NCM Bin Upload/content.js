@@ -11,7 +11,7 @@ function waitForElementToDisplay(id, time) {
         
 		console.log('waiting')
 		if(document.getElementById(id)!=null) {
-            addDropdownClickListener()
+            addDropdownListeners()
             return;
         }
         else {
@@ -23,7 +23,7 @@ function waitForElementToDisplay(id, time) {
 
 
 //This adds an on click listener to add the div to the configuration menu dropdown after it's created
-function addDropdownClickListener() {
+function addDropdownListeners() {
 	console.log('found menu');
 	
 	//listener for configuration button click
@@ -36,6 +36,8 @@ function addDropdownClickListener() {
 	configuration.addEventListener('mouseover', function(){
 		redrawDropdown()
 	});
+	
+	//add event listener to highlight new dropdown item
 }
 
 
@@ -54,12 +56,19 @@ function redrawDropdown () {
 				<a id="menuitem-1073-itemEl" class="x-menu-item-link" href="#" hidefocus="true" unselectable="on" data-qtip="">
 					<div role="img" id="menuitem-1073-iconEl" class="x-menu-item-icon gear-icon " style="">
 					</div>
-					<span id="menuitem-1073-textEl" class="x-menu-item-text" unselectable="on">Test?</span>
+					<span id="menuitem-1073-textEl" class="x-menu-item-text" unselectable="on">Upload Bin</span>
 					<img id="menuitem-1073-arrowEl" src="data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" class="">
 				</a>
 			
 	`;
 	dropdown.appendChild(upload_bin);
+	
+	//Add event listeners for highlighting dropdown on mouseover
+	upload_bin.addEventListener('mouseover', function(){
+	upload_bin.setAttribute('class', 'x-component x-box-item x-component-default x-menu-item x-menu-item-active')});
+	
+	upload_bin.addEventListener('mouseout', function(){
+	upload_bin.setAttribute('class', 'x-component x-box-item x-component-default x-menu-item')});
 	
 	//Increase Length of Dropdown and Shadow, everything gets +28 height
 	dropdown_parent = document.getElementById('menu-1061');
