@@ -83,6 +83,8 @@ function redrawDropdown () {
 	dropdown_shadow = document.getElementById('ext-gen2472');
 	dropdown_shadow.style = 'z-index: 19000; right: auto; left: 253px; top: 183px; width: 163px; height: 248px; box-shadow: rgb(136, 136, 136) 0px 0px 6px; display: block;';
 	
+	//hide shadow when user mouses away from configuration dialog
+	dropdown.addEventListener('blur', function(){dropdown_shadow.style = 'z-index: 19000; right: auto; left: 253px; top: 183px; width: 163px; height: 248px; box-shadow: rgb(136, 136, 136) 0px 0px 6px; display: hidden;'});
 	
 }
 
