@@ -31,10 +31,14 @@ function addDropdownListeners() {
 	
 	//adds custom div 
 	configuration.addEventListener('click', function(){
-		redrawDropdown()
+		if (document.getElementById('menuitem-1099') == 'null') { 
+			redrawDropdown()
+		}
 	});
 	configuration.addEventListener('mouseover', function(){
-		redrawDropdown()
+		if (document.getElementById('menuitem-1099') == 'null') { 
+			redrawDropdown()
+		}
 	});
 	
 	//add event listener to highlight new dropdown item
@@ -56,7 +60,7 @@ function redrawDropdown () {
 				<a id="menuitem-1073-itemEl" class="x-menu-item-link" href="#" hidefocus="true" unselectable="on" data-qtip="">
 					<div role="img" id="menuitem-1073-iconEl" class="x-menu-item-icon gear-icon " style="">
 					</div>
-					<span id="menuitem-1073-textEl" class="x-menu-item-text" unselectable="on">Upload Bin</span>
+					<span id="menuitem-1073-textEl" class="x-menu-item-text" unselectable="on">Upload Bin</span>
 					<img id="menuitem-1073-arrowEl" src="data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" class="">
 				</a>
 			
@@ -83,7 +87,7 @@ function redrawDropdown () {
 	dropdown_shadow = document.getElementById('ext-gen2472');
 	dropdown_shadow.style = 'z-index: 19000; right: auto; left: 253px; top: 183px; width: 163px; height: 248px; box-shadow: rgb(136, 136, 136) 0px 0px 6px; display: block;';
 	
-	//hide shadow when user mouses away from configuration dialog
+	//hide shadow when user mouses away from configuration 
 	dropdown.addEventListener('blur', function(){dropdown_shadow.style = 'z-index: 19000; right: auto; left: 253px; top: 183px; width: 163px; height: 248px; box-shadow: rgb(136, 136, 136) 0px 0px 6px; display: hidden;'});
 	
 }
