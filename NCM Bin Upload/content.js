@@ -1,17 +1,10 @@
-//TODO - Creates div to be added to Configuration Dropdown
-var div = document.createElement( 'div' );
-
-div.id = 'menuitem-9999';
-div.setAttribute('class', 'x-component x-box-item x-component-default x-menu-item');
-div.style = 'right: auto; left: 0px; top: 0px; margin: 0px; width: 163px;';
-
-
 //This function waits for element with given id to appear, then add clickListener
 function waitForElementToDisplay(id, time) {
         
 		console.log('waiting')
 		if(document.getElementById(id)!=null) {
-            addDropdownListeners()
+            createUploadBox()
+			addDropdownListeners()
             return;
         }
         else {
@@ -41,10 +34,9 @@ function addDropdownListeners() {
 
 //Redraw the Configuration Dropdown 
 function redrawDropdown () {
-	//Check upload bin menu item already exists
+	//Check if upload bin menu item already exists
 	if (document.getElementById("menuitem-1099")) {
-		console.log('element already added');
-		
+		//Make dropdown area larger so you can see the new button 
 		expandDropdown()
 	}
 	//Create upload bin menu item
@@ -58,14 +50,12 @@ function redrawDropdown () {
 		upload_bin.id = "menuitem-1099";
 		upload_bin.style = "right: auto; left: 0px; top: 224px; margin: 0px; width: 163px;";
 		upload_bin.innerHTML = `
-			
-					<a id="menuitem-1073-itemEl" class="x-menu-item-link" href="#" hidefocus="true" unselectable="on" data-qtip="">
-						<div role="img" id="menuitem-1073-iconEl" class="x-menu-item-icon gear-icon " style="">
-						</div>
-						<span id="menuitem-1073-textEl" class="x-menu-item-text" unselectable="on">Upload Bin</span>
-						<img id="menuitem-1073-arrowEl" src="data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" class="">
-					</a>
-				
+			<a id="menuitem-1073-itemEl" class="x-menu-item-link" href="#" hidefocus="true" unselectable="on" data-qtip="">
+				<div role="img" id="menuitem-1073-iconEl" class="x-menu-item-icon gear-icon " style="">
+				</div>
+				<span id="menuitem-1073-textEl" class="x-menu-item-text" unselectable="on">Upload Bin</span>
+				<img id="menuitem-1073-arrowEl" src="data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" class="">
+			</a>
 		`;
 		dropdown.appendChild(upload_bin);
 		
@@ -76,11 +66,25 @@ function redrawDropdown () {
 		upload_bin.addEventListener('mouseout', function(){
 		upload_bin.setAttribute('class', 'x-component x-box-item x-component-default x-menu-item')});
 		
+		// Event listener for opening dialog box and hidding dropdown
+		var bin_box = document.getElementById('upload-bin-1099');
+		var main_dropdown = document.getElementById('menu-1061');
+		var dropdown_shadow = document.getElementById('ext-gen2472');
+		
+		upload_bin.addEventListener('click', function(){
+			bin_box.style.display = "block";
+			main_dropdown.style.visibility = "hidden";
+			dropdown_shadow.style.visibility = "hidden";
+			});
+		
+		//Make dropdown area larger so you can see the new button 
+		//This could maybe be done by making a new event listener instead
 		expandDropdown()
 	}
 }
 
 
+//Function to expand height the configuration dropdown menu so you can see the new option
 function expandDropdown () {
 	//Increase Length of Dropdown and Shadow, everything gets +28 height
 		dropdown_parent = document.getElementById('menu-1061');
@@ -99,12 +103,36 @@ function expandDropdown () {
 		dropdown.addEventListener('blur', function(){dropdown_shadow.style = 'z-index: 19000; right: auto; left: 253px; top: 183px; width: 163px; height: 248px; box-shadow: rgb(136, 136, 136) 0px 0px 6px; display: hidden;'});
 }
 
-//Wait for the Configuration botton to appear and then add div to the menu
-waitForElementToDisplay('button-1060', 5000)
+//Wait for the Configuration botton/Page to appear and then add div to the menu
+waitForElementToDisplay('button-1060', 5000);
 
 
-//Todo - Make it so new dropdown button appears
+function createUploadBox() {
+	//Create bin upload dialog box
+	var bin_box = document.createElement('div');
+	bin_box.style = 'display: none; position: fixed; padding-top: 100px; width: 100%; height: 100%; overflow: auto;';
+	bin_box.id = 'upload-bin-1099';
+	bin_box.tabindex = '-1';
+	bin_box.innerHTML = `
+		<div class="modal-content">
+			<span class="close" id="close-bin-1099">&times;</span>
+			<p>Upload a .bin file</p>
+		</div>
+	`
+	
+	//Insert into page
+	var body = document.getElementById('ext-gen1024');
+	body.appendChild(bin_box);
+	
+	var span = document.getElementById("close-bin-1099");
+	
+	span.onclick = function() {
+		bin_box.style.display = "none";
+	}
+};
 
+
+	
 //Todo - Make new dropdown create...a popup screen? Where you can drop your bin
 
 //Todo - Make function to interpret bin 
