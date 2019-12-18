@@ -1,0 +1,15 @@
+{
+  "manifest_version": 2,
+ 
+  "name": "Bin Upload for NCM",
+  "version": "0.1.0",
+  "description": "Upload Bin files to NCM",
+ 
+  "content_scripts": [{
+    "css": ["styles.css"],
+    "js": ["content.js"],
+	"run_at": "document_start",
+    "matches": ["https://www.cradlepointecm.com/*", "https://cradlepointecm.com/*"]
+  }]
+ 
+}
