@@ -6,12 +6,12 @@ div.setAttribute('class', 'x-component x-box-item x-component-default x-menu-ite
 div.style = 'right: auto; left: 0px; top: 0px; margin: 0px; width: 163px;';
 
 
-//This function waits for element with given id to appear, then runs the code in the if block
+//This function waits for element with given id to appear, then add clickListener
 function waitForElementToDisplay(id, time) {
         
 		console.log('waiting')
 		if(document.getElementById(id)!=null) {
-            addListener()
+            addDropdownClickListener()
             return;
         }
         else {
@@ -23,7 +23,7 @@ function waitForElementToDisplay(id, time) {
 
 
 //This adds an on click listener to add the div to the configuration menu dropdown after it's created
-function addListener() {
+function addDropdownClickListener() {
 	console.log('found menu');
 	
 	//listener for configuration button click
@@ -38,18 +38,27 @@ function addListener() {
 
 //Redraw the Configuration Dropdown 
 function redrawDropdown () {
-	//Add new Div
+	//Find dropdown
 	dropdown = document.getElementById("menu-1061-targetEl");
-		dropdown.innerHTML += `
-			<div class="x-component x-box-item x-component-default x-menu-item" id="menuitem-1099" style="right: auto; left: 0px; top: 224px; margin: 0px; width: 163px;">
+	
+	//Create upload_bin dropdown item
+	var upload_bin = document.createElement('div');
+	upload_bin.setAttribute('class', 'x-component x-box-item x-component-default x-menu-item');
+	upload_bin.id = "menuitem-1099";
+	upload_bin.style = "right: auto; left: 0px; top: 224px; margin: 0px; width: 163px;";
+	upload_bin.innerHTML = `
+		
 				<a id="menuitem-1073-itemEl" class="x-menu-item-link" href="#" hidefocus="true" unselectable="on" data-qtip="">
 					<div role="img" id="menuitem-1073-iconEl" class="x-menu-item-icon gear-icon " style="">
 					</div>
 					<span id="menuitem-1073-textEl" class="x-menu-item-text" unselectable="on">Test?</span>
 					<img id="menuitem-1073-arrowEl" src="data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" class="">
 				</a>
-			</div>
-		`
+			
+	`;
+	dropdown.appendChild(upload_bin);
+	
+	
 }
 
 
