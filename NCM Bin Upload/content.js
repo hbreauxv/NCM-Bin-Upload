@@ -110,14 +110,28 @@ waitForElementToDisplay('button-1060', 5000);
 function createUploadBox() {
 	//Create bin upload dialog box
 	var bin_box = document.createElement('div');
-	bin_box.style = 'display: none; position: fixed; padding-top: 100px; width: 100%; height: 100%; overflow: auto;';
+	bin_box.style = 'display: none; position: fixed; width: 450px; height: 175px; right: auto; left: 735px; top: 397px; z-index: 19000;';
 	bin_box.id = 'upload-bin-1099';
 	bin_box.tabindex = '-1';
 	bin_box.innerHTML = `
+		<!-- Modal content -->
+		<div class="my-x-mask"></div>
 		<div class="modal-content">
-			<span class="close" id="close-bin-1099">&times;</span>
-			<p>Upload a .bin file</p>
+		  <div class="modal-header">
+			<span class="close-bin-1099" id="close-bin-1099">&times;</span>
+			<h2>Upload Configuration Bin File</h2>
+		  </div>
+		  <div class="modal-body">
+			<p>Select Bin File</p>
+			<input type="file" id="bin_file" name="bin"></input>
+		  </div>
+		  <div class="modal-footer">
+			<button class="upload-button">Upload Configuration</button>
+		  </div>
+		  
+		  
 		</div>
+		
 	`
 	
 	//Insert into page
@@ -128,9 +142,11 @@ function createUploadBox() {
 	
 	span.onclick = function() {
 		bin_box.style.display = "none";
-	}
+	};
 };
 
+
+//Todo - add a listener to the "devices" button to reload the new configuration menu
 
 	
 //Todo - Make new dropdown create...a popup screen? Where you can drop your bin
