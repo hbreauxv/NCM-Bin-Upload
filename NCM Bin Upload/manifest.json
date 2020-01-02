@@ -10,6 +10,10 @@
     "js": ["content.js"],
 	"run_at": "document_start",
     "matches": ["https://www.cradlepointecm.com/*", "https://cradlepointecm.com/*"]
-  }]
+  }],
+  
+  "permissions" : [
+	"fileSystem"
+  ]
  
 }

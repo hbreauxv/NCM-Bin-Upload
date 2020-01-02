@@ -126,7 +126,7 @@ function createUploadBox() {
 			<input type="file" id="bin_file" name="bin"></input>
 		  </div>
 		  <div class="modal-footer">
-			<button class="upload-button">Upload Configuration</button>
+			<button class="upload-button" id="upload-bin-button">Upload Configuration</button>
 		  </div>
 		  
 		  
@@ -143,13 +143,30 @@ function createUploadBox() {
 	span.onclick = function() {
 		bin_box.style.display = "none";
 	};
+	
+	//Add choose file button listener
+	var chooseFileButton = document.getElementById("bin_file");
+	var fReader = new FileReader();
+	
+	fReader.onload = function(e) {
+		console.log(e.target.result);
+	};
+	
+	chooseFileButton.onchange = function(e) {
+		var file = this.files[0];
+		fReader.readAsText(file);
+	};
+	
+	//Read the bin when upload file is clicked
+	
+	//Convert bin into proper format
+	
+	//Upload configuration to selected router 
 };
 
 
 //Todo - add a listener to the "devices" button to reload the new configuration menu
 
-	
-//Todo - Make new dropdown create...a popup screen? Where you can drop your bin
 
 //Todo - Make function to interpret bin 
 
@@ -158,3 +175,6 @@ function createUploadBox() {
 //Todo - Make function that uses your ncm keys/session cookies/whatever to send a put and upload your bin to the router ID
 
 //Todo - Add all features to the cradlepointecm.com/groups page
+
+
+//Bug - Clicking edit doesn't close the Configuration dropdown
