@@ -1,11 +1,11 @@
 //This function waits for element with given id to appear, then add clickListener
 function waitForElementToDisplay(id, time) {
         
-		console.log('waiting')
+		console.log('waiting');
 		if(document.getElementById(id)!=null) {
-            createUploadBox()
-			addDropdownListeners()
-            return;
+            console.log('found it');
+			run();
+            return true;
         }
         else {
             setTimeout(function() {
@@ -15,7 +15,16 @@ function waitForElementToDisplay(id, time) {
     }
 
 
-//This adds an on click listener to add the div to the configuration menu dropdown after it's created
+// all the functions to be run when program is activated.  This is probably bad practice but its better than what I had before. 
+function run() {
+	addDropdownListeners()
+};
+
+
+//Wait for the Configuration botton/Page to appear and then add div to the menu
+waitForElementToDisplay('button-1060', 5000);
+
+// Listen for menu clicks and respond accordingly 
 function addDropdownListeners() {
 	console.log('found menu');
 	
@@ -24,47 +33,49 @@ function addDropdownListeners() {
 	
 	//adds custom div 
 	configuration.addEventListener('click', function(){
-		redrawDropdown()
-	});
-	configuration.addEventListener('mouseover', function(){
-		redrawDropdown()
+		addUploadOption();
+		//expandDropdown()
 	});
 }
 
 
+
+//Create upload_bin dropdown item
+var upload_bin = document.createElement('div');
+upload_bin.setAttribute('class', 'x-component x-box-item x-component-default x-menu-item');
+upload_bin.id = "menuitem-1099";
+upload_bin.style = "right: auto; left: 0px; top: 224px; margin: 0px; width: 163px;";
+upload_bin.innerHTML = `
+	<a id="menuitem-1073-itemEl" class="x-menu-item-link" href="#" hidefocus="true" unselectable="on" data-qtip="">
+		<div role="img" id="menuitem-1073-iconEl" class="x-menu-item-icon gear-icon " style="">
+		</div>
+		<span id="menuitem-1073-textEl" class="x-menu-item-text" unselectable="on">Upload Bin</span>
+		<img id="menuitem-1073-arrowEl" src="data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" class="">
+	</a>
+`;
+
+//Add event listeners for highlighting dropdown on mouseover
+upload_bin.addEventListener('mouseover', function(){
+upload_bin.setAttribute('class', 'x-component x-box-item x-component-default x-menu-item x-menu-item-active')});
+
+upload_bin.addEventListener('mouseout', function(){
+upload_bin.setAttribute('class', 'x-component x-box-item x-component-default x-menu-item')});
+
+
 //Redraw the Configuration Dropdown 
-function redrawDropdown () {
+function addUploadOption () {
 	//Check if upload bin menu item already exists
 	if (document.getElementById("menuitem-1099")) {
 		//Make dropdown area larger so you can see the new button 
-		expandDropdown()
+		return
 	}
 	//Create upload bin menu item
 	else {
 		//Find dropdown
 		dropdown = document.getElementById("menu-1061-targetEl");
 		
-		//Create upload_bin dropdown item
-		var upload_bin = document.createElement('div');
-		upload_bin.setAttribute('class', 'x-component x-box-item x-component-default x-menu-item');
-		upload_bin.id = "menuitem-1099";
-		upload_bin.style = "right: auto; left: 0px; top: 224px; margin: 0px; width: 163px;";
-		upload_bin.innerHTML = `
-			<a id="menuitem-1073-itemEl" class="x-menu-item-link" href="#" hidefocus="true" unselectable="on" data-qtip="">
-				<div role="img" id="menuitem-1073-iconEl" class="x-menu-item-icon gear-icon " style="">
-				</div>
-				<span id="menuitem-1073-textEl" class="x-menu-item-text" unselectable="on">Upload Bin</span>
-				<img id="menuitem-1073-arrowEl" src="data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" class="">
-			</a>
-		`;
+		//Add upload bin item to dropdown
 		dropdown.appendChild(upload_bin);
-		
-		//Add event listeners for highlighting dropdown on mouseover
-		upload_bin.addEventListener('mouseover', function(){
-		upload_bin.setAttribute('class', 'x-component x-box-item x-component-default x-menu-item x-menu-item-active')});
-		
-		upload_bin.addEventListener('mouseout', function(){
-		upload_bin.setAttribute('class', 'x-component x-box-item x-component-default x-menu-item')});
 		
 		// Event listener for opening dialog box and hidding dropdown
 		var bin_box = document.getElementById('upload-bin-1099');
@@ -72,16 +83,19 @@ function redrawDropdown () {
 		var dropdown_shadow = document.getElementById('ext-gen2472');
 		
 		upload_bin.addEventListener('click', function(){
-			bin_box.style.display = "block";
-			main_dropdown.style.visibility = "hidden";
-			dropdown_shadow.style.visibility = "hidden";
-			});
-		
-		//Make dropdown area larger so you can see the new button 
-		//This could maybe be done by making a new event listener instead
-		expandDropdown()
+			if (bin_box.style.display = "none") {
+				bin_box.style.display = "block";
+				//main_dropdown.style.visibility = "hidden";
+				//dropdown_shadow.style.visibility = "hidden";
+			}
+			else {
+				bin_box.style.display = "none"
+			}
+		});
 	}
 }
+
+
 
 
 //Function to expand height the configuration dropdown menu so you can see the new option
@@ -103,8 +117,9 @@ function expandDropdown () {
 		dropdown.addEventListener('blur', function(){dropdown_shadow.style = 'z-index: 19000; right: auto; left: 253px; top: 183px; width: 163px; height: 248px; box-shadow: rgb(136, 136, 136) 0px 0px 6px; display: hidden;'});
 }
 
-//Wait for the Configuration botton/Page to appear and then add div to the menu
-waitForElementToDisplay('button-1060', 5000);
+
+
+
 
 
 function createUploadBox() {
@@ -154,7 +169,7 @@ function createUploadBox() {
 	
 	chooseFileButton.onchange = function(e) {
 		var file = this.files[0];
-		fReader.readAsText(file);
+		fReader.readAsBinaryString(file);
 	};
 	
 	//Read the bin when upload file is clicked
@@ -163,6 +178,7 @@ function createUploadBox() {
 	
 	//Upload configuration to selected router 
 };
+
 
 
 //Todo - add a listener to the "devices" button to reload the new configuration menu
