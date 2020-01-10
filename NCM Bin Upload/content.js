@@ -37,7 +37,14 @@ function addDropdownListeners() {
 	configuration.addEventListener('click', function(){
 		addUploadOption();
 		expandDropdown();
+		
+		//adds listener to redraw dropdown on mouseover
+		configuration.addEventListener('mouseover', function() {
+			expandDropdown();
+		});
 	});
+	
+	
 }
 
 
