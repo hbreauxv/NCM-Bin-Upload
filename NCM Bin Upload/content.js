@@ -17,7 +17,9 @@ function waitForElementToDisplay(id, time) {
 
 // all the functions to be run when program is activated.  This is probably bad practice but its better than what I had before. 
 function run() {
-	addDropdownListeners()
+	addDropdownListeners();
+	// This is here because the page has to load before the upload box can be inserted
+	createUploadBox();
 };
 
 
@@ -34,7 +36,7 @@ function addDropdownListeners() {
 	//adds custom div 
 	configuration.addEventListener('click', function(){
 		addUploadOption();
-		//expandDropdown()
+		expandDropdown();
 	});
 }
 
@@ -43,7 +45,7 @@ function addDropdownListeners() {
 //Create upload_bin dropdown item
 var upload_bin = document.createElement('div');
 upload_bin.setAttribute('class', 'x-component x-box-item x-component-default x-menu-item');
-upload_bin.id = "menuitem-1099";
+upload_bin.id = "menuitem-binupload";
 upload_bin.style = "right: auto; left: 0px; top: 224px; margin: 0px; width: 163px;";
 upload_bin.innerHTML = `
 	<a id="menuitem-1073-itemEl" class="x-menu-item-link" href="#" hidefocus="true" unselectable="on" data-qtip="">
@@ -92,6 +94,7 @@ function addUploadOption () {
 				bin_box.style.display = "none"
 			}
 		});
+
 	}
 }
 
@@ -99,22 +102,23 @@ function addUploadOption () {
 
 
 //Function to expand height the configuration dropdown menu so you can see the new option
+//There's a bug here.  The bottom colum of devices gets bigger but the dropdown doesn't...lol
 function expandDropdown () {
 	//Increase Length of Dropdown and Shadow, everything gets +28 height
 		dropdown_parent = document.getElementById('menu-1061');
-		dropdown_parent.style = "height: 252px; right: auto; left: 253px; top: 179px; z-index: 19001; width: 163px;";
+		dropdown_parent.style.cssText += "height: 252px"
 		
 		dropdown_body = document.getElementById('menu-1061-body');
-		dropdown_body.style = "left: 0px; top: 0px; width: 163px; height: 252px";
+		dropdown_body.style.cssText += "height: 252px";
 		
 		dropdown_inner = document.getElementById('menu-1061-innerCt');
-		dropdown_inner.style = "height: 252px; width: 163px;";
+		dropdown_inner.style.cssText += "height: 252px"
 		
-		dropdown_shadow = document.getElementById('ext-gen2472');
-		dropdown_shadow.style = 'z-index: 19000; right: auto; left: 253px; top: 183px; width: 163px; height: 248px; box-shadow: rgb(136, 136, 136) 0px 0px 6px; display: block;';
+		//dropdown_shadow = document.getElementById('ext-gen2472');
+		//dropdown_shadow.style = 'z-index: 19000; right: auto; left: 253px; top: 183px; width: 163px; height: 248px; box-shadow: rgb(136, 136, 136) 0px 0px 6px; display: block;';
 		
-		//hide shadow when user mouses away from configuration 
-		dropdown.addEventListener('blur', function(){dropdown_shadow.style = 'z-index: 19000; right: auto; left: 253px; top: 183px; width: 163px; height: 248px; box-shadow: rgb(136, 136, 136) 0px 0px 6px; display: hidden;'});
+		// hide shadow when user mouses away from configuration 
+		//dropdown.addEventListener('blur', function(){dropdown_shadow.style = 'z-index: 19000; right: auto; left: 253px; top: 183px; width: 163px; height: 248px; box-shadow: rgb(136, 136, 136) 0px 0px 6px; display: hidden;'});
 }
 
 
