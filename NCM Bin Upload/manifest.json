@@ -7,10 +7,14 @@
  
   "content_scripts": [{
     "css": ["styles.css"],
-    "js": ["content.js"],
+    "js": ["pako.js", "content.js"],
 	"run_at": "document_start",
     "matches": ["https://www.cradlepointecm.com/*", "https://cradlepointecm.com/*"]
   }],
+  
+  "icons": { "16": "16icon.png",
+           "48": "48icon.png",
+          "128": "128icon.png" },
   
   "permissions" : [
 	"fileSystem"
