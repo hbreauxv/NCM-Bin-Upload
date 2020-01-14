@@ -43,8 +43,6 @@ function addDropdownListeners() {
 			expandDropdown();
 		});
 	});
-	
-	
 }
 
 
@@ -121,8 +119,9 @@ function expandDropdown () {
 		dropdown_inner = document.getElementById('menu-1061-innerCt');
 		dropdown_inner.style.cssText += "height: 252px"
 		
-		//dropdown_shadow = document.getElementById('ext-gen2472');
-		//dropdown_shadow.style = 'z-index: 19000; right: auto; left: 253px; top: 183px; width: 163px; height: 248px; box-shadow: rgb(136, 136, 136) 0px 0px 6px; display: block;';
+		// this number appears to change!
+		dropdown_shadow = document.getElementById('ext-gen2475');
+		dropdown_shadow.style.cssText += 'height: 248px;';
 		
 		// hide shadow when user mouses away from configuration 
 		//dropdown.addEventListener('blur', function(){dropdown_shadow.style = 'z-index: 19000; right: auto; left: 253px; top: 183px; width: 163px; height: 248px; box-shadow: rgb(136, 136, 136) 0px 0px 6px; display: hidden;'});
@@ -176,11 +175,17 @@ function createUploadBox() {
 	
 	fReader.onload = function(e) {
 		console.log(e.target.result);
+		var decompressed = pako.inflate(e.target.result);
+		var strData = String.fromCharCode.apply(null, new Uint16Array(decompressed));
+		console.log(strData);
 	};
 	
 	chooseFileButton.onchange = function(e) {
 		var file = this.files[0];
 		fReader.readAsBinaryString(file);
+		//this crashed everything lol
+		//var decompressed = pako.deflate(file);
+		//console.log(decompressed);
 	};
 	
 	//Read the bin when upload file is clicked
