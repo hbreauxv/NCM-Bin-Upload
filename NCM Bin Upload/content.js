@@ -20,6 +20,9 @@ function run() {
 	addDropdownListeners();
 	// This is here because the page has to load before the upload box can be inserted
 	createUploadBox();
+	
+	//Temporary, PostConfig() should be moved to the Upload Bin modal after its working
+	PostConfig();
 };
 
 
@@ -205,6 +208,49 @@ function createUploadBox() {
 //Todo - Make function to grab the router ID you have selected
 
 //Todo - Make function that uses your ncm keys/session cookies/whatever to send a put and upload your bin to the router ID
+//https://developer.chrome.com/extensions/xhr expalins xmlhttprequest to make requests
+function PostConfig() {
+	
+	//Send request to create configuration_editor endpoint so that the configuration can be edited
+	let createConfigEditor = new Promise((resolve, reject) => {
+		setTimeout( function() {
+			var xhr = new XMLHttpRequest();
+			xhr.open("POST", "https://www.cradlepointecm.com/api/v1/configuration_editors/?expand=firmware", true);
+			xhr.setRequestHeader("Content-Type", "application/json");
+			xhr.send('{"router":"/api/v1/routers/1617509/"}');
+			console.log(xhr.responseText);
+			// Actions to take if the promise is resolved or rejected
+			xhr.onload = () => resolve(xhr.response);
+			xhr.onerror = () => reject(xhr.statusText);
+		}, 500);
+	});
+	
+	//After editor is created, parse the editor uri 
+	createConfigEditor.then((xhr_response) => {
+		//Parse response to find the configuration_editor uri. xhr_response = the response of a succesful post to create a config_editor in createConfigEditor		
+		var response = JSON.parse(xhr_response);
+		var resource_uri = response.data.resource_uri;
+		
+		//Send any puts to the config_editor and then commit them
+		
+		//deleteConfigEditor();
+
+	});	
+
+	
+	function deleteConfigEditor(resource_uri) {
+		//Delete the created configuration_editor endpoint. resource_uri = resource_uri of a created config_editor from 
+		var xhrDelete = new XMLHttpRequest();
+		xhrDelete.open("DELETE", "https://www.cradlepointecm.com" + resource_uri, true);
+		xhrDelete.setRequestHeader("Content-Type", "application/json");
+		xhrDelete.send();
+		console.log('deleted config editor!');
+	};
+	
+
+};
+	
+	
 
 //Todo - Add all features to the cradlepointecm.com/groups page
 
