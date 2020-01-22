@@ -226,6 +226,7 @@ function PostConfig(ncmJson) {
 		setTimeout( function() {
 			var xhr = new XMLHttpRequest();
 			xhr.open("GET", "https://www.cradlepointecm.com/api/v1/configuration_managers/?router.id=1617509", true);
+			xhr.send();
 			console.log(xhr.responseText);
 			// Actions to take if the promise is resolved or rejected
 			xhr.onload = () => resolve(xhr.response);
@@ -239,30 +240,23 @@ function PostConfig(ncmJson) {
 		//Parse response to find the configuration_managers uri. xhr_response = the response of a succesful post to create a config_editor in createConfigEditor		
 		console.log(xhr_response);
 		var response = JSON.parse(xhr_response);
-		var resource_uri = JSON.stringify(response.data.resource_uri);
+		var resource_uri = JSON.stringify(response["data"][0]["resource_uri"]);
+		var url = "https://www.cradlepointecm.com" + resource_uri.replace(/"/g, '');
+		console.log(url);
 		
 		//Create request to send config to router.
 		var xhrPut = new XMLHttpRequest();
-		xhrPut.open("PUT", "https://www.cradlepointecm.com" + resource_uri, true);
+		xhrPut.open("PUT", url, true);
 		xhrPut.setRequestHeader("Content-Type", "application/json");
-		
+
 		//Send data
-		xhrPut.send(ncmJson);
+		xhrPut.send(JSON.stringify(ncmJson));
 		
 		//log results
 		console.log(xhrPut);
 		return resource_uri
 		
 
-	}).then(function(resource_uri) {
-		
-		//not needed?
-		return resource_uri
-		
-	}).then(function(resource_uri) {
-		
-		//not needed?
-		
 	})
 };
 	
