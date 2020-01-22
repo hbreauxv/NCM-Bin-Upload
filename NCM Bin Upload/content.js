@@ -173,6 +173,7 @@ function createUploadBox() {
 	var chooseFileButton = document.getElementById("bin_file");
 	var fReader = new FileReader();
 	
+	//Decodes and sends the config to your device when upload bin is pressed
 	fReader.onload = function(e) {
 		//decompress the bin file.  bins are compressed using zlib and the pako library inflates them to give the str result
 		var decompressed = pako.inflate(e.target.result);
@@ -183,18 +184,29 @@ function createUploadBox() {
 		//new var that stores the config in the format that NCM wants
 		var ncmJson = {"configuration":[binJson[0]["config"],[]]};
 		
-		//print the ncm version of the JSON 
+		//remove the product name from the bin
+		if (ncmJson["configuration"][0]["system"]["admin"]["product_name"]) {
+			delete ncmJson["configuration"][0]["system"]["admin"].product_name
+		}
+		//remove ecmversion from the bin
+		if (ncmJson["configuration"][0]["ecm"]) {
+			delete ncmJson["configuration"][0].ecm
+		}
+		
+		//print the version of the JSON thats going to be sent to NCM
 		console.log(ncmJson);
+		
+		PostConfig(ncmJson);
+
 	};
-	
-	chooseFileButton.onchange = function(e) {
-		var file = this.files[0];
-		fReader.readAsBinaryString(file);
-	};
+
 	
 	//Read the bin when upload file is clicked
-	
-	//Convert bin into proper format
+	var uploadFileButton = document.getElementById("upload-bin-button");
+	uploadFileButton.addEventListener("click", function(){
+		var file = chooseFileButton.files[0];
+		fReader.readAsBinaryString(file);
+	});
 	
 	//Upload configuration to selected router 
 };
@@ -207,15 +219,13 @@ function createUploadBox() {
 
 //Todo - Make function that uses your ncm keys/session cookies/whatever to send a put and upload your bin to the router ID
 //https://developer.chrome.com/extensions/xhr expalins xmlhttprequest to make requests
-function PostConfig() {
+function PostConfig(ncmJson) {
 	
 	//Send request to create configuration_editor endpoint so that the configuration can be edited
-	let createConfigEditor = new Promise((resolve, reject) => {
+	let getConfigManagerId = new Promise((resolve, reject) => {
 		setTimeout( function() {
 			var xhr = new XMLHttpRequest();
-			xhr.open("POST", "https://www.cradlepointecm.com/api/v1/configuration_editors/?expand=firmware", true);
-			xhr.setRequestHeader("Content-Type", "application/json");
-			xhr.send('{"router":"/api/v1/routers/1617509/"}');
+			xhr.open("GET", "https://www.cradlepointecm.com/api/v1/configuration_managers/?router.id=1617509", true);
 			console.log(xhr.responseText);
 			// Actions to take if the promise is resolved or rejected
 			xhr.onload = () => resolve(xhr.response);
@@ -224,29 +234,36 @@ function PostConfig() {
 	});
 	
 	//After editor is created, parse the editor uri 
-	createConfigEditor.then((xhr_response) => {
-		//Parse response to find the configuration_editor uri. xhr_response = the response of a succesful post to create a config_editor in createConfigEditor		
+	getConfigManagerId.then((xhr_response) => {
+		
+		//Parse response to find the configuration_managers uri. xhr_response = the response of a succesful post to create a config_editor in createConfigEditor		
+		console.log(xhr_response);
 		var response = JSON.parse(xhr_response);
-		var resource_uri = response.data.resource_uri;
+		var resource_uri = JSON.stringify(response.data.resource_uri);
 		
-		//Send any puts to the config_editor and then commit them
+		//Create request to send config to router.
+		var xhrPut = new XMLHttpRequest();
+		xhrPut.open("PUT", "https://www.cradlepointecm.com" + resource_uri, true);
+		xhrPut.setRequestHeader("Content-Type", "application/json");
 		
-		//delete the config_editor endpoint that was created 
-		//deleteConfigEditor(resource_uri);
+		//Send data
+		xhrPut.send(ncmJson);
+		
+		//log results
+		console.log(xhrPut);
+		return resource_uri
+		
 
-	});	
-
-	
-	function deleteConfigEditor(resource_uri) {
-		//Delete the created configuration_editor endpoint. resource_uri = resource_uri of a created config_editor from 
-		var xhrDelete = new XMLHttpRequest();
-		xhrDelete.open("DELETE", "https://www.cradlepointecm.com" + resource_uri, true);
-		xhrDelete.setRequestHeader("Content-Type", "application/json");
-		xhrDelete.send();
-		console.log('deleted config editor!');
-	};
-	
-
+	}).then(function(resource_uri) {
+		
+		//not needed?
+		return resource_uri
+		
+	}).then(function(resource_uri) {
+		
+		//not needed?
+		
+	})
 };
 	
 	
