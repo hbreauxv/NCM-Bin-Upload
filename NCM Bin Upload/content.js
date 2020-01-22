@@ -217,15 +217,19 @@ function createUploadBox() {
 
 //Todo - Make function to grab the router ID you have selected
 
-//Todo - Make function that uses your ncm keys/session cookies/whatever to send a put and upload your bin to the router ID
-//https://developer.chrome.com/extensions/xhr expalins xmlhttprequest to make requests
+//This function sends your configuration to a router
 function PostConfig(ncmJson) {
+	
+	//find selected router
+	var selected_router = document.getElementsByClassName("x-grid-row-selected");
+	console.log(selected_router);
+	selected_router = selected_router[0]["dataset"]["recordid"];
 	
 	//Send request to create configuration_editor endpoint so that the configuration can be edited
 	let getConfigManagerId = new Promise((resolve, reject) => {
 		setTimeout( function() {
 			var xhr = new XMLHttpRequest();
-			xhr.open("GET", "https://www.cradlepointecm.com/api/v1/configuration_managers/?router.id=1617509", true);
+			xhr.open("GET", "https://www.cradlepointecm.com/api/v1/configuration_managers/?router.id=" + selected_router, true);
 			xhr.send();
 			console.log(xhr.responseText);
 			// Actions to take if the promise is resolved or rejected
