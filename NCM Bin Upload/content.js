@@ -18,6 +18,7 @@ function waitForElementToDisplay(id, time) {
 // all the functions to be run when program is activated.  This is probably bad practice but its better than what I had before. 
 function run() {
 	addDropdownListeners();
+	
 	// This is here because the page has to load before the upload box can be inserted
 	createUploadBox();
 };
@@ -105,8 +106,7 @@ function addUploadOption () {
 
 
 
-
-//Function to expand height the configuration dropdown menu so you can see the new option
+//Function to expand height of the configuration dropdown menu so you can see the new option
 //There's a bug here.  The bottom colum of devices gets bigger but the dropdown doesn't...lol
 function expandDropdown () {
 	//Increase Length of Dropdown and Shadow, everything gets +28 height
@@ -174,10 +174,17 @@ function createUploadBox() {
 	var fReader = new FileReader();
 	
 	fReader.onload = function(e) {
-		console.log(e.target.result);
+		//decompress the bin file.  bins are compressed using zlib and the pako library inflates them to give the str result
 		var decompressed = pako.inflate(e.target.result);
 		var strData = String.fromCharCode.apply(null, new Uint16Array(decompressed));
-		console.log(strData);
+		
+		//decode the decompressed bin as json
+		var binJson = JSON.parse(strData);
+		//new var that stores the config in the format that NCM wants
+		var ncmJson = {"configuration":[binJson[0]["config"],[]]};
+		
+		//print the ncm version of the JSON 
+		console.log(ncmJson);
 	};
 	
 	chooseFileButton.onchange = function(e) {
@@ -199,14 +206,52 @@ function createUploadBox() {
 
 //Todo - add a listener to the "devices" button to reload the new configuration menu
 
-
-//Todo - Make function to interpret bin 
-
 //Todo - Make function to grab the router ID you have selected
 
 //Todo - Make function that uses your ncm keys/session cookies/whatever to send a put and upload your bin to the router ID
+//https://developer.chrome.com/extensions/xhr expalins xmlhttprequest to make requests
+function PostConfig() {
+	
+	//Send request to create configuration_editor endpoint so that the configuration can be edited
+	let createConfigEditor = new Promise((resolve, reject) => {
+		setTimeout( function() {
+			var xhr = new XMLHttpRequest();
+			xhr.open("POST", "https://www.cradlepointecm.com/api/v1/configuration_editors/?expand=firmware", true);
+			xhr.setRequestHeader("Content-Type", "application/json");
+			xhr.send('{"router":"/api/v1/routers/1617509/"}');
+			console.log(xhr.responseText);
+			// Actions to take if the promise is resolved or rejected
+			xhr.onload = () => resolve(xhr.response);
+			xhr.onerror = () => reject(xhr.statusText);
+		}, 500);
+	});
+	
+	//After editor is created, parse the editor uri 
+	createConfigEditor.then((xhr_response) => {
+		//Parse response to find the configuration_editor uri. xhr_response = the response of a succesful post to create a config_editor in createConfigEditor		
+		var response = JSON.parse(xhr_response);
+		var resource_uri = response.data.resource_uri;
+		
+		//Send any puts to the config_editor and then commit them
+		
+		//delete the config_editor endpoint that was created 
+		//deleteConfigEditor(resource_uri);
+
+	});	
+
+	
+	function deleteConfigEditor(resource_uri) {
+		//Delete the created configuration_editor endpoint. resource_uri = resource_uri of a created config_editor from 
+		var xhrDelete = new XMLHttpRequest();
+		xhrDelete.open("DELETE", "https://www.cradlepointecm.com" + resource_uri, true);
+		xhrDelete.setRequestHeader("Content-Type", "application/json");
+		xhrDelete.send();
+		console.log('deleted config editor!');
+	};
+	
+
+};
+	
+	
 
 //Todo - Add all features to the cradlepointecm.com/groups page
-
-
-//Bug - Clicking edit doesn't close the Configuration dropdown
