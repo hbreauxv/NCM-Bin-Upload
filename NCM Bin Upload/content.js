@@ -18,11 +18,9 @@ function waitForElementToDisplay(id, time) {
 // all the functions to be run when program is activated.  This is probably bad practice but its better than what I had before. 
 function run() {
 	addDropdownListeners();
+	
 	// This is here because the page has to load before the upload box can be inserted
 	createUploadBox();
-	
-	//Temporary, PostConfig() should be moved to the Upload Bin modal after its working
-	PostConfig();
 };
 
 
@@ -108,8 +106,7 @@ function addUploadOption () {
 
 
 
-
-//Function to expand height the configuration dropdown menu so you can see the new option
+//Function to expand height of the configuration dropdown menu so you can see the new option
 //There's a bug here.  The bottom colum of devices gets bigger but the dropdown doesn't...lol
 function expandDropdown () {
 	//Increase Length of Dropdown and Shadow, everything gets +28 height
@@ -177,10 +174,17 @@ function createUploadBox() {
 	var fReader = new FileReader();
 	
 	fReader.onload = function(e) {
-		console.log(e.target.result);
+		//decompress the bin file.  bins are compressed using zlib and the pako library inflates them to give the str result
 		var decompressed = pako.inflate(e.target.result);
 		var strData = String.fromCharCode.apply(null, new Uint16Array(decompressed));
-		console.log(strData);
+		
+		//decode the decompressed bin as json
+		var binJson = JSON.parse(strData);
+		//new var that stores the config in the format that NCM wants
+		var ncmJson = {"configuration":[binJson[0]["config"],[]]};
+		
+		//print the ncm version of the JSON 
+		console.log(ncmJson);
 	};
 	
 	chooseFileButton.onchange = function(e) {
@@ -201,9 +205,6 @@ function createUploadBox() {
 
 
 //Todo - add a listener to the "devices" button to reload the new configuration menu
-
-
-//Todo - Make function to interpret bin 
 
 //Todo - Make function to grab the router ID you have selected
 
@@ -233,7 +234,8 @@ function PostConfig() {
 		
 		//Send any puts to the config_editor and then commit them
 		
-		//deleteConfigEditor();
+		//delete the config_editor endpoint that was created 
+		//deleteConfigEditor(resource_uri);
 
 	});	
 
@@ -253,6 +255,3 @@ function PostConfig() {
 	
 
 //Todo - Add all features to the cradlepointecm.com/groups page
-
-
-//Bug - Clicking edit doesn't close the Configuration dropdown
