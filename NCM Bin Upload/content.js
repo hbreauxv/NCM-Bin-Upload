@@ -190,9 +190,6 @@ function createUploadBox() {
 	chooseFileButton.onchange = function(e) {
 		var file = this.files[0];
 		fReader.readAsBinaryString(file);
-		//this crashed everything lol
-		//var decompressed = pako.deflate(file);
-		//console.log(decompressed);
 	};
 	
 	//Read the bin when upload file is clicked
