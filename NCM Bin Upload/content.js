@@ -146,7 +146,7 @@ function createUploadBox() {
 			<span class="close-bin-1099" id="close-bin-1099">&times;</span>
 			<h2>Upload Configuration Bin File</h2>
 		  </div>
-		  <div class="modal-body">
+		  <div class="modal-body" id="upload-modal-body-1099">
 			<p>Select Bin File</p>
 			<input type="file" id="bin_file" name="bin"></input>
 		  </div>
@@ -208,14 +208,14 @@ function createUploadBox() {
 		fReader.readAsBinaryString(file);
 	});
 	
-	//Upload configuration to selected router 
+
 };
 
 
 
-//Todo - add a listener to the "devices" button to reload the new configuration menu
 
-//Todo - Make function to grab the router ID you have selected
+
+
 
 //This function sends your configuration to a router
 function PostConfig(ncmJson) {
@@ -239,7 +239,7 @@ function PostConfig(ncmJson) {
 	});
 	
 	//After editor is created, parse the editor uri 
-	getConfigManagerId.then((xhr_response) => {
+	getConfigManagerId.then( (xhr_response) => {
 		
 		//Parse response to find the configuration_managers uri. xhr_response = the response of a succesful post to create a config_editor in createConfigEditor		
 		console.log(xhr_response);
@@ -249,21 +249,45 @@ function PostConfig(ncmJson) {
 		console.log(url);
 		
 		//Create request to send config to router.
-		var xhrPut = new XMLHttpRequest();
-		xhrPut.open("PUT", url, true);
-		xhrPut.setRequestHeader("Content-Type", "application/json");
+		return new Promise((resolve, reject) => {
+			setTimeout( function() {
+				var xhrPut = new XMLHttpRequest();
+				xhrPut.open("PUT", url, true);
+				xhrPut.setRequestHeader("Content-Type", "application/json");
 
-		//Send data
-		xhrPut.send(JSON.stringify(ncmJson));
+				//Send data
+				xhrPut.send(JSON.stringify(ncmJson));
+				
+				// Return result to next .then function 
+				xhrPut.onload = () => resolve(xhrPut);
+				xhrPut.onerror = () => reject(xhrPut);
+				
+				//log results
+				console.log(xhrPut);
+			}, 500)
+		});
 		
-		//log results
-		console.log(xhrPut);
-		return resource_uri
+	}).then( function(xhrPut) {
 		
+		//get bin_box so we can fill it with the result of the put
+		var bin_box_modal = document.getElementById("upload-modal-body-1099")
+		console.log(xhrPut.statusText);
 
-	})
+		//Print the result of the upload
+		if (xhrPut.statusText === "Accepted") {
+			
+			bin_box_modal.innerHTML = "<p> Upload Result: " + xhrPut.statusText + "!</p>"
+		} else {
+			bin_box_modal.innerHTML = `<p> Upload Result: ` + xhrPut.statusText + `</p>
+			<p>Check if the bin you upload is for the same router and firmware as the router you uploaded it to.</p>
+			<p>Response details: ` + xhrPut.responseText + `</p>
+			`
+		}
+	});
 };
-	
+
+
+//Todo - add a listener to the "devices" button to reload the new configuration menu	
 	
 
 //Todo - Add all features to the cradlepointecm.com/groups page
