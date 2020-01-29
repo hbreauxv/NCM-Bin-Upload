@@ -163,9 +163,9 @@ function createUploadBox() {
 	var body = document.getElementById('ext-gen1024');
 	body.appendChild(bin_box);
 	
-	var span = document.getElementById("close-bin-1099");
+	var closeButton = document.getElementById("close-bin-1099");
 	
-	span.onclick = function() {
+	closeButton.onclick = function() {
 		bin_box.style.display = "none";
 	};
 	
@@ -181,6 +181,7 @@ function createUploadBox() {
 		
 		//decode the decompressed bin as json
 		var binJson = JSON.parse(strData);
+		
 		//new var that stores the config in the format that NCM wants
 		var ncmJson = {"configuration":[binJson[0]["config"],[]]};
 		
@@ -204,6 +205,11 @@ function createUploadBox() {
 	//Read the bin when upload file is clicked
 	var uploadFileButton = document.getElementById("upload-bin-button");
 	uploadFileButton.addEventListener("click", function(){
+		//tell user request has been sent
+		document.getElementById('upload-modal-body-1099').innerHTML = "<p>Bin upload in progress...</p>"
+		
+		uploadFileButton.disabled = true;
+		
 		var file = chooseFileButton.files[0];
 		fReader.readAsBinaryString(file);
 	});
@@ -283,6 +289,22 @@ function PostConfig(ncmJson) {
 			<p>Response details: ` + xhrPut.responseText + `</p>
 			`
 		}
+		
+		// Clear the message after the user closes the modal-body
+		var closeButton = document.getElementById("close-bin-1099");
+		
+		function resetText() {
+			// reset inner text
+			bin_box_modal.innerHTML = `<p>Select Bin File</p>
+			<input type="file" id="bin_file" name="bin"></input>`
+			
+			//make upload bin button clickable again
+			document.getElementById("upload-bin-button").disabled = false;
+			
+			closeButton.removeEventListener("click", resetText)
+		}
+		
+		closeButton.addEventListener("click", resetText);
 	});
 };
 
