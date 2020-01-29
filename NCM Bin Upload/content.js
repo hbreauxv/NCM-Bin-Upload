@@ -146,7 +146,7 @@ function createUploadBox() {
 			<span class="close-bin-1099" id="close-bin-1099">&times;</span>
 			<h2>Upload Configuration Bin File</h2>
 		  </div>
-		  <div class="modal-body">
+		  <div class="modal-body" id="upload-modal-body-1099">
 			<p>Select Bin File</p>
 			<input type="file" id="bin_file" name="bin"></input>
 		  </div>
@@ -173,6 +173,7 @@ function createUploadBox() {
 	var chooseFileButton = document.getElementById("bin_file");
 	var fReader = new FileReader();
 	
+	//Decodes and sends the config to your device when upload bin is pressed
 	fReader.onload = function(e) {
 		//decompress the bin file.  bins are compressed using zlib and the pako library inflates them to give the str result
 		var decompressed = pako.inflate(e.target.result);
@@ -183,42 +184,53 @@ function createUploadBox() {
 		//new var that stores the config in the format that NCM wants
 		var ncmJson = {"configuration":[binJson[0]["config"],[]]};
 		
-		//print the ncm version of the JSON 
+		//remove the product name from the bin
+		if (ncmJson["configuration"][0]["system"]["admin"]["product_name"]) {
+			delete ncmJson["configuration"][0]["system"]["admin"].product_name
+		}
+		//remove ecmversion from the bin
+		if (ncmJson["configuration"][0]["ecm"]) {
+			delete ncmJson["configuration"][0].ecm
+		}
+		
+		//print the version of the JSON thats going to be sent to NCM
 		console.log(ncmJson);
+		
+		PostConfig(ncmJson);
+
 	};
-	
-	chooseFileButton.onchange = function(e) {
-		var file = this.files[0];
-		fReader.readAsBinaryString(file);
-		//this crashed everything lol
-		//var decompressed = pako.deflate(file);
-		//console.log(decompressed);
-	};
+
 	
 	//Read the bin when upload file is clicked
+	var uploadFileButton = document.getElementById("upload-bin-button");
+	uploadFileButton.addEventListener("click", function(){
+		var file = chooseFileButton.files[0];
+		fReader.readAsBinaryString(file);
+	});
 	
-	//Convert bin into proper format
-	
-	//Upload configuration to selected router 
+
 };
 
 
 
-//Todo - add a listener to the "devices" button to reload the new configuration menu
 
-//Todo - Make function to grab the router ID you have selected
 
-//Todo - Make function that uses your ncm keys/session cookies/whatever to send a put and upload your bin to the router ID
-//https://developer.chrome.com/extensions/xhr expalins xmlhttprequest to make requests
-function PostConfig() {
+
+
+//This function sends your configuration to a router
+function PostConfig(ncmJson) {
+	
+	//find selected router
+	var selected_router = document.getElementsByClassName("x-grid-row-selected");
+	console.log(selected_router);
+	selected_router = selected_router[0]["dataset"]["recordid"];
 	
 	//Send request to create configuration_editor endpoint so that the configuration can be edited
-	let createConfigEditor = new Promise((resolve, reject) => {
+	let getConfigManagerId = new Promise((resolve, reject) => {
 		setTimeout( function() {
 			var xhr = new XMLHttpRequest();
-			xhr.open("POST", "https://www.cradlepointecm.com/api/v1/configuration_editors/?expand=firmware", true);
-			xhr.setRequestHeader("Content-Type", "application/json");
-			xhr.send('{"router":"/api/v1/routers/1617509/"}');
+			xhr.open("GET", "https://www.cradlepointecm.com/api/v1/configuration_managers/?router.id=" + selected_router, true);
+			xhr.send();
 			console.log(xhr.responseText);
 			// Actions to take if the promise is resolved or rejected
 			xhr.onload = () => resolve(xhr.response);
@@ -227,31 +239,55 @@ function PostConfig() {
 	});
 	
 	//After editor is created, parse the editor uri 
-	createConfigEditor.then((xhr_response) => {
-		//Parse response to find the configuration_editor uri. xhr_response = the response of a succesful post to create a config_editor in createConfigEditor		
+	getConfigManagerId.then( (xhr_response) => {
+		
+		//Parse response to find the configuration_managers uri. xhr_response = the response of a succesful post to create a config_editor in createConfigEditor		
+		console.log(xhr_response);
 		var response = JSON.parse(xhr_response);
-		var resource_uri = response.data.resource_uri;
+		var resource_uri = JSON.stringify(response["data"][0]["resource_uri"]);
+		var url = "https://www.cradlepointecm.com" + resource_uri.replace(/"/g, '');
+		console.log(url);
 		
-		//Send any puts to the config_editor and then commit them
+		//Create request to send config to router.
+		return new Promise((resolve, reject) => {
+			setTimeout( function() {
+				var xhrPut = new XMLHttpRequest();
+				xhrPut.open("PUT", url, true);
+				xhrPut.setRequestHeader("Content-Type", "application/json");
+
+				//Send data
+				xhrPut.send(JSON.stringify(ncmJson));
+				
+				// Return result to next .then function 
+				xhrPut.onload = () => resolve(xhrPut);
+				xhrPut.onerror = () => reject(xhrPut);
+				
+				//log results
+				console.log(xhrPut);
+			}, 500)
+		});
 		
-		//delete the config_editor endpoint that was created 
-		//deleteConfigEditor(resource_uri);
+	}).then( function(xhrPut) {
+		
+		//get bin_box so we can fill it with the result of the put
+		var bin_box_modal = document.getElementById("upload-modal-body-1099")
+		console.log(xhrPut.statusText);
 
-	});	
-
-	
-	function deleteConfigEditor(resource_uri) {
-		//Delete the created configuration_editor endpoint. resource_uri = resource_uri of a created config_editor from 
-		var xhrDelete = new XMLHttpRequest();
-		xhrDelete.open("DELETE", "https://www.cradlepointecm.com" + resource_uri, true);
-		xhrDelete.setRequestHeader("Content-Type", "application/json");
-		xhrDelete.send();
-		console.log('deleted config editor!');
-	};
-	
-
+		//Print the result of the upload
+		if (xhrPut.statusText === "Accepted") {
+			
+			bin_box_modal.innerHTML = "<p> Upload Result: " + xhrPut.statusText + "!</p>"
+		} else {
+			bin_box_modal.innerHTML = `<p> Upload Result: ` + xhrPut.statusText + `</p>
+			<p>Check if the bin you upload is for the same router and firmware as the router you uploaded it to.</p>
+			<p>Response details: ` + xhrPut.responseText + `</p>
+			`
+		}
+	});
 };
-	
+
+
+//Todo - add a listener to the "devices" button to reload the new configuration menu	
 	
 
 //Todo - Add all features to the cradlepointecm.com/groups page
