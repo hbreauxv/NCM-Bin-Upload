@@ -175,8 +175,6 @@ function createUploadBox() {
 	
 	//Decodes and sends the config to your device when upload bin is pressed
 	fReader.onload = function(e) {
-		
-		
 		//decompress the bin file.  bins are compressed using zlib and the pako library inflates them to give the str result
 		var decompressed = pako.inflate(e.target.result);
 		var strData = String.fromCharCode.apply(null, new Uint16Array(decompressed));
@@ -207,6 +205,7 @@ function createUploadBox() {
 	//Read the bin when upload file is clicked
 	var uploadFileButton = document.getElementById("upload-bin-button");
 	uploadFileButton.addEventListener("click", function(){
+		uploadFileButton.disabled = true;
 		var file = chooseFileButton.files[0];
 		fReader.readAsBinaryString(file);
 	});
