@@ -163,9 +163,9 @@ function createUploadBox() {
 	var body = document.getElementById('ext-gen1024');
 	body.appendChild(bin_box);
 	
-	var span = document.getElementById("close-bin-1099");
+	var closeButton = document.getElementById("close-bin-1099");
 	
-	span.onclick = function() {
+	closeButton.onclick = function() {
 		bin_box.style.display = "none";
 	};
 	
@@ -175,12 +175,15 @@ function createUploadBox() {
 	
 	//Decodes and sends the config to your device when upload bin is pressed
 	fReader.onload = function(e) {
+		
+		
 		//decompress the bin file.  bins are compressed using zlib and the pako library inflates them to give the str result
 		var decompressed = pako.inflate(e.target.result);
 		var strData = String.fromCharCode.apply(null, new Uint16Array(decompressed));
 		
 		//decode the decompressed bin as json
 		var binJson = JSON.parse(strData);
+		
 		//new var that stores the config in the format that NCM wants
 		var ncmJson = {"configuration":[binJson[0]["config"],[]]};
 		
@@ -283,6 +286,17 @@ function PostConfig(ncmJson) {
 			<p>Response details: ` + xhrPut.responseText + `</p>
 			`
 		}
+		
+		// Clear the message after the user closes the modal-body
+		var closeButton = document.getElementById("close-bin-1099");
+		
+		function resetText() {
+			bin_box_modal.innerHTML = `<p>Select Bin File</p>
+			<input type="file" id="bin_file" name="bin"></input>`
+			closeButton.removeEventListener("click", resetText)
+		}
+		
+		closeButton.addEventListener("click", resetText);
 	});
 };
 
