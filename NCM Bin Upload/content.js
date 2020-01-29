@@ -205,7 +205,11 @@ function createUploadBox() {
 	//Read the bin when upload file is clicked
 	var uploadFileButton = document.getElementById("upload-bin-button");
 	uploadFileButton.addEventListener("click", function(){
+		//tell user request has been sent
+		document.getElementById('upload-modal-body-1099').innerHTML = "<p>Bin upload in progress...</p>"
+		
 		uploadFileButton.disabled = true;
+		
 		var file = chooseFileButton.files[0];
 		fReader.readAsBinaryString(file);
 	});
@@ -290,8 +294,13 @@ function PostConfig(ncmJson) {
 		var closeButton = document.getElementById("close-bin-1099");
 		
 		function resetText() {
+			// reset inner text
 			bin_box_modal.innerHTML = `<p>Select Bin File</p>
 			<input type="file" id="bin_file" name="bin"></input>`
+			
+			//make upload bin button clickable again
+			document.getElementById("upload-bin-button").disabled = false;
+			
 			closeButton.removeEventListener("click", resetText)
 		}
 		
