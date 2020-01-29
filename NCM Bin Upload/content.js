@@ -1,31 +1,51 @@
-//This function waits for element with given id to appear, then add clickListener
-function waitForElementToDisplay(id, time) {
-        
-		console.log('waiting');
-		if(document.getElementById(id)!=null) {
-            console.log('found it');
-			run();
-            return true;
-        }
-        else {
-            setTimeout(function() {
-                waitForElementToDisplay(id, time);
-            }, time);
-        }
-    }
+// This function searches for the configuration menu and the runs the function to add elements to the page after its loaded. 
+function searchForConfigurationButton(text, time) {
+	console.log('searching for config menu');
+	var spanTags = document.getElementsByTagName("span");
+	var found;
+	
+	for (var i = 0; i < spanTags.length; i++) {
+		// check for class match
+		if (spanTags[i].getAttribute("class") == "x-btn-inner x-btn-inner-center") {
+			// check for text match
+			if (spanTags[i].textContent == text){
+				found = spanTags[i];
+			}
+		}
+	}
+	
+	// check if config menu was found.  Exit if it was, search again if it wasn't
+	if (found) {
+		console.log('found configuration menu');
+		
+		// run funtions to add elements to page
+		run();
+		return true;
+	}
+	else {
+		setTimeout(function() {
+			searchForConfigurationButton(text, time);
+		}, time);
+	}
+};
 
 
 // all the functions to be run when program is activated.  This is probably bad practice but its better than what I had before. 
 function run() {
 	addDropdownListeners();
 	
-	// This is here because the page has to load before the upload box can be inserted
+	// recursively add event listeners to reload when the devices button is clicked
 	createUploadBox();
 };
 
 
-//Wait for the Configuration botton/Page to appear and then add div to the menu
-waitForElementToDisplay('button-1060', 5000);
+//Wait for the Configuration button to appear and then add new elements to page
+searchForConfigurationButton('Configuration', 5000);
+
+
+
+//Wait for the Devices button to display and add listeners to re-add the upload bin button to the page. od 'app-devices-button'
+
 
 // Listen for menu clicks and respond accordingly 
 function addDropdownListeners() {
