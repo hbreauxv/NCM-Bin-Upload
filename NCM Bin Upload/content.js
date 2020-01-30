@@ -1,5 +1,7 @@
 // This function searches for the configuration menu and the runs the function to add elements to the page after its loaded. 
-function searchForConfigurationButton(text, class_text, time) {
+function searchForConfigurationButton(text, class_text, parent_id, time) {
+	// find the parent <div id="ecm-core-view-devices-Routers-1047"></div>
+	// then later, use node.contains( child ) to check that the span is in the routers <div> 
 	
 	var configuration_menu = new Promise((resolve, reject) => {
 		console.log('searching for config menu');
@@ -18,10 +20,7 @@ function searchForConfigurationButton(text, class_text, time) {
 		
 		// check if config menu was found.  Exit if it was, search again if it wasn't
 		if (found) {
-			console.log('found configuration menu');
-			
-			// run funtions to add elements to page
-			// run(found);
+			console.log('found config menu');
 			resolve(found);
 		}
 		else {
@@ -37,8 +36,6 @@ function searchForConfigurationButton(text, class_text, time) {
 
 // all the functions to be run when program is activated.  This is probably bad practice but its better than what I had before. 
 function run(configuration_menu) {
-	console.log('made it through promise');
-	console.log(configuration_menu);
 	addDropdownListeners(configuration_menu);
 	
 	document.getElementById('app-devices-button').addEventListener('click', function(){
@@ -51,7 +48,7 @@ function run(configuration_menu) {
 
 
 //Wait for the Configuration button to appear and then add new elements to page
-searchForConfigurationButton('Configuration', "x-btn-inner x-btn-inner-center", 5000);
+searchForConfigurationButton('Configuration', "x-btn-inner x-btn-inner-center", 'Routers', 5000);
 
 
 //searchForConfigurationButton('Configuration', "x-btn-inner x-btn-inner-center", 5000);
