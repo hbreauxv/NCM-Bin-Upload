@@ -1,38 +1,49 @@
 // This function searches for the configuration menu and the runs the function to add elements to the page after its loaded. 
-function searchForConfigurationButton(text, time) {
-	console.log('searching for config menu');
-	var spanTags = document.getElementsByTagName("span");
-	var found;
+function searchForConfigurationButton(text, class_text, time) {
 	
-	for (var i = 0; i < spanTags.length; i++) {
-		// check for class match
-		if (spanTags[i].getAttribute("class") == "x-btn-inner x-btn-inner-center") {
-			// check for text match
-			if (spanTags[i].textContent == text){
-				found = spanTags[i];
+	var configuration_menu = new Promise((resolve, reject) => {
+		console.log('searching for config menu');
+		var spanTags = document.getElementsByTagName("span");
+		var found;
+		
+		for (var i = 0; i < spanTags.length; i++) {
+			// check for class match
+			if (spanTags[i].getAttribute("class") == class_text) {
+				// check for text match
+				if (spanTags[i].textContent == text){
+					found = spanTags[i];
+				}
 			}
 		}
-	}
-	
-	// check if config menu was found.  Exit if it was, search again if it wasn't
-	if (found) {
-		console.log('found configuration menu');
 		
-		// run funtions to add elements to page
-		run();
-		return true;
-	}
-	else {
-		setTimeout(function() {
-			searchForConfigurationButton(text, time);
-		}, time);
-	}
+		// check if config menu was found.  Exit if it was, search again if it wasn't
+		if (found) {
+			console.log('found configuration menu');
+			
+			// run funtions to add elements to page
+			// run(found);
+			resolve(found);
+		}
+		else {
+			setTimeout(function() {
+				searchForConfigurationButton(text, class_text, time);
+			}, time);
+		}
+	});
+	configuration_menu.then( (configuration_menu) => run(configuration_menu));
+
 };
 
 
 // all the functions to be run when program is activated.  This is probably bad practice but its better than what I had before. 
-function run() {
-	addDropdownListeners();
+function run(configuration_menu) {
+	console.log('made it through promise');
+	console.log(configuration_menu);
+	addDropdownListeners(configuration_menu);
+	
+	document.getElementById('app-devices-button').addEventListener('click', function(){
+		searchForConfigurationButton('Configuration', 5000);
+	});
 	
 	// recursively add event listeners to reload when the devices button is clicked
 	createUploadBox();
@@ -40,7 +51,10 @@ function run() {
 
 
 //Wait for the Configuration button to appear and then add new elements to page
-searchForConfigurationButton('Configuration', 5000);
+searchForConfigurationButton('Configuration', "x-btn-inner x-btn-inner-center", 5000);
+
+
+//searchForConfigurationButton('Configuration', "x-btn-inner x-btn-inner-center", 5000);
 
 
 
@@ -48,19 +62,15 @@ searchForConfigurationButton('Configuration', 5000);
 
 
 // Listen for menu clicks and respond accordingly 
-function addDropdownListeners() {
-	console.log('found menu');
-	
+function addDropdownListeners(configuration_menu) {
 	//listener for configuration button click
-	var configuration = document.getElementById('button-1060');
-	
-	//adds custom div 
-	configuration.addEventListener('click', function(){
+	configuration_menu.addEventListener('click', function(){
+		// BUG / TODO both of these functions need new ways to find the config menu elements they need 
 		addUploadOption();
 		expandDropdown();
 		
 		//adds listener to redraw dropdown on mouseover
-		configuration.addEventListener('mouseover', function() {
+		configuration_menu.addEventListener('mouseover', function() {
 			expandDropdown();
 		});
 	});
