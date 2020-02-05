@@ -1,46 +1,107 @@
-//This function waits for element with given id to appear, then add clickListener
-function waitForElementToDisplay(id, time) {
-        
-		console.log('waiting');
-		if(document.getElementById(id)!=null) {
-            console.log('found it');
-			run();
-            return true;
-        }
-        else {
-            setTimeout(function() {
-                waitForElementToDisplay(id, time);
-            }, time);
-        }
-    }
+// Find the router/devices view parent of the config menu
+async function findParent(time) {
+
+	console.log('search for parent');
+	
+	var divTags = document.getElementsByTagName("div");
+	var parent;
+	
+	// loop until parent is found
+	while (true) {
+		for (var i = 0; i < divTags.length; i++) {
+			// check if element has an id attributes
+			if (divTags[i].getAttribute("id")){
+				
+				// check for id match
+				if (divTags[i].getAttribute("id").includes("ecm-core-view-devices-Routers")){
+					
+					// make sure it isn't the "...devices-Routers-1254-body" id
+					if (divTags[i].getAttribute("id").includes("body") == false) {
+						parent = divTags[i];
+					}
+				}
+			}
+		};
+		if (parent) {
+			console.log('found parent');
+			return parent;
+		}
+		else {
+			console.log('searching again');
+			await new Promise((resolve, reject) => setTimeout(resolve, time));
+		};
+	}
+}
+
+async function findChild(text, span_class, parent, time) {
+
+	console.log('searching for child');
+	console.log(parent);
+	
+	var spanTags = document.getElementsByTagName("span");
+	var child;
+	
+	while (true) {
+		var parent = await findParent();
+		
+		for (var i = 0; i < spanTags.length; i++) {
+			// check for class match
+			if (spanTags[i].getAttribute("class") == span_class) {
+				// check for text match
+				if (spanTags[i].textContent == text){
+					// check that it's a child of parent
+					console.log(spanTags[i])
+					if (parent.contains(spanTags[i])){
+						child = spanTags[i];
+					}
+				}
+			}
+		}
+	
+		// check if config menu was found.  Exit if it was, search again if it wasn't
+		if (child) {
+			console.log('found config menu');
+			console.log(child);
+			return child
+		}
+		else {
+			console.log('searching again');
+			await new Promise((resolve, reject) => setTimeout(resolve, time));
+		};
+	};
+}
+
+
+findParent(5000).then(parent => findChild('Configuration', "x-btn-inner x-btn-inner-center", parent, 5000));
 
 
 // all the functions to be run when program is activated.  This is probably bad practice but its better than what I had before. 
-function run() {
-	addDropdownListeners();
+function run(configuration_menu) {
+	addDropdownListeners(configuration_menu);
 	
-	// This is here because the page has to load before the upload box can be inserted
+	document.getElementById('app-devices-button').addEventListener('click', function(){
+		searchForConfigurationButton('Configuration', 5000);
+	});
+	
+	// recursively add event listeners to reload when the devices button is clicked
 	createUploadBox();
 };
 
 
-//Wait for the Configuration botton/Page to appear and then add div to the menu
-waitForElementToDisplay('button-1060', 5000);
+
+//Wait for the Devices button to display and add listeners to re-add the upload bin button to the page. od 'app-devices-button'
+
 
 // Listen for menu clicks and respond accordingly 
-function addDropdownListeners() {
-	console.log('found menu');
-	
+function addDropdownListeners(configuration_menu) {
 	//listener for configuration button click
-	var configuration = document.getElementById('button-1060');
-	
-	//adds custom div 
-	configuration.addEventListener('click', function(){
+	configuration_menu.addEventListener('click', function(){
+		// BUG / TODO both of these functions need new ways to find the config menu elements they need 
 		addUploadOption();
 		expandDropdown();
 		
 		//adds listener to redraw dropdown on mouseover
-		configuration.addEventListener('mouseover', function() {
+		configuration_menu.addEventListener('mouseover', function() {
 			expandDropdown();
 		});
 	});
