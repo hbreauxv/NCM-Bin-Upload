@@ -1,37 +1,70 @@
-// This function searches for the configuration menu and the runs the function to add elements to the page after its loaded. 
-function searchForConfigurationButton(text, class_text, parent_id, time) {
-	// find the parent <div id="ecm-core-view-devices-Routers-1047"></div>
-	// then later, use node.contains( child ) to check that the span is in the routers <div> 
+// Find the router/devices view parent of the config menu
+async function findParent(time) {
+
+	console.log('search for parent');
 	
-	var configuration_menu = new Promise((resolve, reject) => {
-		console.log('searching for config menu');
-		var spanTags = document.getElementsByTagName("span");
-		var found;
-		
+	var divTags = document.getElementsByTagName("div");
+	var parent;
+	
+	// loop until parent is found
+	while (true) {
+		for (var i = 0; i < divTags.length; i++) {
+			// check if element has an id attributes
+			if (divTags[i].getAttribute("id")){
+				// check for id match
+				if (divTags[i].getAttribute("id").includes("ecm-core-view-devices-Routers")){
+					parent = divTags[i];
+				}
+			}
+		};
+		if (parent) {
+			console.log('found parent');
+			return parent;
+		}
+		else {
+			console.log('searching again');
+			await new Promise((resolve, reject) => setTimeout(resolve, time));
+		};
+	}
+}
+
+async function findChild(text, span_class, parent, time) {
+
+	console.log('searching for child');
+	console.log(parent);
+	
+	var spanTags = document.getElementsByTagName("span");
+	var child;
+	
+	while (true) {
 		for (var i = 0; i < spanTags.length; i++) {
 			// check for class match
-			if (spanTags[i].getAttribute("class") == class_text) {
+			if (spanTags[i].getAttribute("class") == span_class) {
 				// check for text match
 				if (spanTags[i].textContent == text){
-					found = spanTags[i];
+					// check that it's a child of parent
+					if (parent.contains(spanTags[i])){
+						child = spanTags[i];
+					}
 				}
 			}
 		}
-		
+	
 		// check if config menu was found.  Exit if it was, search again if it wasn't
-		if (found) {
+		if (child) {
 			console.log('found config menu');
-			resolve(found);
+			console.log(child);
+			return child
 		}
 		else {
-			setTimeout(function() {
-				searchForConfigurationButton(text, class_text, time);
-			}, time);
-		}
-	});
-	configuration_menu.then( (configuration_menu) => run(configuration_menu));
+			console.log('searching again');
+			await new Promise((resolve, reject) => setTimeout(resolve, time));
+		};
+	};
+}
 
-};
+
+findParent(5000).then(parent => findChild('Configuration', "x-btn-inner x-btn-inner-center", parent, 5000));
 
 
 // all the functions to be run when program is activated.  This is probably bad practice but its better than what I had before. 
@@ -45,13 +78,6 @@ function run(configuration_menu) {
 	// recursively add event listeners to reload when the devices button is clicked
 	createUploadBox();
 };
-
-
-//Wait for the Configuration button to appear and then add new elements to page
-searchForConfigurationButton('Configuration', "x-btn-inner x-btn-inner-center", 'Routers', 5000);
-
-
-//searchForConfigurationButton('Configuration', "x-btn-inner x-btn-inner-center", 5000);
 
 
 
