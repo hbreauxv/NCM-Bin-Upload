@@ -11,9 +11,14 @@ async function findParent(time) {
 		for (var i = 0; i < divTags.length; i++) {
 			// check if element has an id attributes
 			if (divTags[i].getAttribute("id")){
+				
 				// check for id match
 				if (divTags[i].getAttribute("id").includes("ecm-core-view-devices-Routers")){
-					parent = divTags[i];
+					
+					// make sure it isn't the "...devices-Routers-1254-body" id
+					if (divTags[i].getAttribute("id").includes("body") == false) {
+						parent = divTags[i];
+					}
 				}
 			}
 		};
@@ -37,12 +42,15 @@ async function findChild(text, span_class, parent, time) {
 	var child;
 	
 	while (true) {
+		var parent = await findParent();
+		
 		for (var i = 0; i < spanTags.length; i++) {
 			// check for class match
 			if (spanTags[i].getAttribute("class") == span_class) {
 				// check for text match
 				if (spanTags[i].textContent == text){
 					// check that it's a child of parent
+					console.log(spanTags[i])
 					if (parent.contains(spanTags[i])){
 						child = spanTags[i];
 					}
