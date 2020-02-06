@@ -102,21 +102,23 @@ function run(configuration_menu) {
 // Listen for menu clicks and respond accordingly 
 function addDropdownListeners(configuration_menu) {
 
-	// find the number of the configuration menu elements we need to interact with.  They're always the number of the config
-	// menu + 1
-	let config_menu_number = configuration_menu.id;
-	config_menu_number = (parseInt(config_menu_number.split("-")[1], 10) + 1).toString();
-	console.log(config_menu_number);
+	// Calculate number of main configuration button.
+	let configuration_menu_num = configuration_menu.id.split("-")[1];
+	let configuration = document.getElementById('button-' + configuration_menu_num);
+
+	// find the number of the other config menu elements.  They're always the number of the config menu + 1
+	let config_child_num = configuration_menu.id;
+	config_child_num = (parseInt(config_child_num.split("-")[1], 10) + 1).toString();
 
 	//listener for configuration button click
-	configuration_menu.addEventListener('click', function(){
+	configuration.addEventListener('click', function(){
 		// BUG / TODO both of these functions need new ways to find the config menu elements they need 
-		addUploadOption(config_menu_number);
-		expandDropdown(config_menu_number);
+		addUploadOption(config_child_num);
+		expandDropdown(config_child_num);
 		
 		//adds listener to redraw dropdown on mouseover
 		configuration_menu.addEventListener('mouseover', function() {
-			expandDropdown(config_menu_number);
+			expandDropdown(config_child_num);
 		});
 	});
 }
