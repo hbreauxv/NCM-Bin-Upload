@@ -116,7 +116,7 @@ function addDropdownListeners(configuration_menu) {
 		
 		//adds listener to redraw dropdown on mouseover
 		configuration_menu.addEventListener('mouseover', function() {
-			expandDropdown();
+			expandDropdown(config_menu_number);
 		});
 	});
 }
@@ -145,9 +145,9 @@ upload_bin.addEventListener('mouseout', function(){
 upload_bin.setAttribute('class', 'x-component x-box-item x-component-default x-menu-item')});
 
 
-//Redraw the Configuration Dropdown 
+// Redraw the Configuration Dropdown
 function addUploadOption(config_menu_number) {
-	//Check if upload bin menu item already exists
+	// Check if upload bin menu item already exists
 	if (document.getElementById("menuitem-1099")) {
 		//Make dropdown area larger so you can see the new button 
 		return
@@ -155,16 +155,18 @@ function addUploadOption(config_menu_number) {
 	//Create upload bin menu item
 	else {
 		//Find dropdown
-		let dropdown = document.getElementById("menu-" + config_menu_number + "-targetEl");
+		let dropdown = document.getElementById("menu-1061-targetEl");
 		
 		//Add upload bin item to dropdown
 		dropdown.appendChild(upload_bin);
 		
 		// Event listener for opening dialog box and hidding dropdown
-		var bin_box = document.getElementById('upload-bin-1099');
-		var main_dropdown = document.getElementById('menu-'+ config_menu_number);
-		var dropdown_shadow = document.getElementById('ext-gen2472');
-		
+		let bin_box = document.getElementById('upload-bin-1099');
+
+		// todo - manage shadow display
+		let main_dropdown = document.getElementById('menu-'+ config_menu_number);
+		let dropdown_shadow = document.getElementById('ext-gen2472');
+
 		upload_bin.addEventListener('click', function(){
 			if (bin_box.style.display = "none") {
 				bin_box.style.display = "block";
@@ -182,20 +184,21 @@ function addUploadOption(config_menu_number) {
 
 
 //Function to expand height of the configuration dropdown menu so you can see the new option
-//There's a bug here.  The bottom colum of devices gets bigger but the dropdown doesn't...lol
+//There's a bug here.  The bottom column of devices gets bigger but the dropdown doesn't...lol
 function expandDropdown(config_menu_number) {
 	//Increase Length of Dropdown and Shadow, everything gets +28 height
-		dropdown_parent = document.getElementById('menu-' + config_menu_number);
+		console.log('expanding dropdown');
+		let dropdown_parent = document.getElementById('menu-' + config_menu_number);
 		dropdown_parent.style.cssText += "height: 252px";
 		
-		dropdown_body = document.getElementById('menu-1061-body');
+		let dropdown_body = document.getElementById('menu-' + config_menu_number + '-body');
 		dropdown_body.style.cssText += "height: 252px";
 		
-		dropdown_inner = document.getElementById('menu-1061-innerCt');
+		let dropdown_inner = document.getElementById('menu-' + config_menu_number + '-innerCt');
 		dropdown_inner.style.cssText += "height: 252px";
 		
 		// this number appears to change!
-		dropdown_shadow = document.getElementById('ext-gen2475');
+		let dropdown_shadow = document.getElementById('ext-gen2475');
 		dropdown_shadow.style.cssText += 'height: 248px;';
 		
 		// hide shadow when user mouses away from configuration 
