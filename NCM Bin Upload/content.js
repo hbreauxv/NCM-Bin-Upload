@@ -87,7 +87,9 @@ function run(configuration_menu) {
 	// Add listeners to re-add all of our custom elements when returning to the devices page
 	document.getElementById('app-devices-button').addEventListener('click', function(){
 		// Add a listener so that we search for the configuration menu every time the Devices page is clicked/gone to
-		findParent(5000).then(parent => findChild('Configuration', "x-btn-inner x-btn-inner-center", parent, 5000));
+		findParent(5000)
+			.then(parent => findChild('Configuration', "x-btn-inner x-btn-inner-center", parent, 5000)
+				.then(child => run(child))); // Recursion! Hooray!
 	});
 	
 	// recursively add event listeners to reload when the devices button is clicked
