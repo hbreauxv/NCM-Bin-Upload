@@ -126,7 +126,6 @@ function addDropdownListeners(configuration_menu) {
 }
 
 
-
 //Create upload_bin dropdown item
 var upload_bin = document.createElement('div');
 upload_bin.setAttribute('class', 'x-component x-box-item x-component-default x-menu-item');
@@ -184,7 +183,6 @@ function addUploadOption(config_child_num) {
 
 	}
 }
-
 
 
 //Function to expand height of the configuration dropdown menu so you can see the new option
@@ -271,7 +269,7 @@ function createUploadBox() {
 		if (ncmJson["configuration"][0]["system"]["admin"]["product_name"]) {
 			delete ncmJson["configuration"][0]["system"]["admin"].product_name
 		}
-		//remove ecmversion from the bin
+		//remove ecm version from the bin
 		if (ncmJson["configuration"][0]["ecm"]) {
 			delete ncmJson["configuration"][0].ecm
 		}
@@ -362,7 +360,7 @@ function PostConfig(ncmJson) {
 			bin_box_modal.innerHTML = "<p> Upload Result: " + xhrPut.statusText + "!</p>"
 		} else {
 			bin_box_modal.innerHTML = `<p> Upload Result: ` + xhrPut.statusText + `</p>
-			<p>Check if the bin you upload is for the same router and firmware as the router you uploaded it to.</p>
+			<p>Check if the bin you uploaded is for the same router and firmware as the router you uploaded it to.</p>
 			<p>Response details: ` + xhrPut.responseText + `</p>
 			`
 		}
