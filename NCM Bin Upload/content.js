@@ -148,7 +148,7 @@ upload_bin.setAttribute('class', 'x-component x-box-item x-component-default x-m
 
 
 // Redraw the Configuration Dropdown
-function addUploadOption(config_menu_number) {
+function addUploadOption(config_child_num) {
 	// Check if upload bin menu item already exists
 	if (document.getElementById("menuitem-1099")) {
 		//Make dropdown area larger so you can see the new button 
@@ -157,7 +157,7 @@ function addUploadOption(config_menu_number) {
 	//Create upload bin menu item
 	else {
 		//Find dropdown
-		let dropdown = document.getElementById("menu-1061-targetEl");
+		let dropdown = document.getElementById("menu-"+ config_child_num +"-targetEl");
 		
 		//Add upload bin item to dropdown
 		dropdown.appendChild(upload_bin);
@@ -166,7 +166,7 @@ function addUploadOption(config_menu_number) {
 		let bin_box = document.getElementById('upload-bin-1099');
 
 		// todo - manage shadow display
-		let main_dropdown = document.getElementById('menu-'+ config_menu_number);
+		let main_dropdown = document.getElementById('menu-'+ config_child_num);
 		let dropdown_shadow = document.getElementById('ext-gen2472');
 
 		upload_bin.addEventListener('click', function(){
@@ -187,16 +187,16 @@ function addUploadOption(config_menu_number) {
 
 //Function to expand height of the configuration dropdown menu so you can see the new option
 //There's a bug here.  The bottom column of devices gets bigger but the dropdown doesn't...lol
-function expandDropdown(config_menu_number) {
+function expandDropdown(config_child_num) {
 	//Increase Length of Dropdown and Shadow, everything gets +28 height
 		console.log('expanding dropdown');
-		let dropdown_parent = document.getElementById('menu-' + config_menu_number);
+		let dropdown_parent = document.getElementById('menu-' + config_child_num);
 		dropdown_parent.style.cssText += "height: 252px";
 		
-		let dropdown_body = document.getElementById('menu-' + config_menu_number + '-body');
+		let dropdown_body = document.getElementById('menu-' + config_child_num + '-body');
 		dropdown_body.style.cssText += "height: 252px";
 		
-		let dropdown_inner = document.getElementById('menu-' + config_menu_number + '-innerCt');
+		let dropdown_inner = document.getElementById('menu-' + config_child_num + '-innerCt');
 		dropdown_inner.style.cssText += "height: 252px";
 		
 		// this number appears to change!
