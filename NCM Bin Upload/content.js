@@ -79,9 +79,12 @@ findParent(5000)
 
 // all the functions to be run when program is activated.  This is probably bad practice but its better than what I had before. 
 function run(configuration_menu) {
-	console.log(configuration_menu)
+	console.log(configuration_menu);
+
+	// Add the listeners to insert the new upload bin button into the configuration dropdown
 	addDropdownListeners(configuration_menu);
-	
+
+	// Add listeners to re-add all of our custom elements when returning to the devices page
 	document.getElementById('app-devices-button').addEventListener('click', function(){
 		// Add a listener so that we search for the configuration menu every time the Devices page is clicked/gone to
 		findParent(5000).then(parent => findChild('Configuration', "x-btn-inner x-btn-inner-center", parent, 5000));
@@ -98,11 +101,18 @@ function run(configuration_menu) {
 
 // Listen for menu clicks and respond accordingly 
 function addDropdownListeners(configuration_menu) {
+
+	// find the number of the configuration menu elements we need to interact with.  They're always the number of the config
+	// menu + 1
+	let config_menu_number = configuration_menu.id;
+	config_menu_number = (parseInt(config_menu_number.split("-")[1], 10) + 1).toString();
+	console.log(config_menu_number);
+
 	//listener for configuration button click
 	configuration_menu.addEventListener('click', function(){
 		// BUG / TODO both of these functions need new ways to find the config menu elements they need 
-		addUploadOption();
-		expandDropdown();
+		addUploadOption(config_menu_number);
+		expandDropdown(config_menu_number);
 		
 		//adds listener to redraw dropdown on mouseover
 		configuration_menu.addEventListener('mouseover', function() {
@@ -136,7 +146,7 @@ upload_bin.setAttribute('class', 'x-component x-box-item x-component-default x-m
 
 
 //Redraw the Configuration Dropdown 
-function addUploadOption () {
+function addUploadOption(config_menu_number) {
 	//Check if upload bin menu item already exists
 	if (document.getElementById("menuitem-1099")) {
 		//Make dropdown area larger so you can see the new button 
@@ -145,14 +155,14 @@ function addUploadOption () {
 	//Create upload bin menu item
 	else {
 		//Find dropdown
-		dropdown = document.getElementById("menu-1061-targetEl");
+		let dropdown = document.getElementById("menu-" + config_menu_number + "-targetEl");
 		
 		//Add upload bin item to dropdown
 		dropdown.appendChild(upload_bin);
 		
 		// Event listener for opening dialog box and hidding dropdown
 		var bin_box = document.getElementById('upload-bin-1099');
-		var main_dropdown = document.getElementById('menu-1061');
+		var main_dropdown = document.getElementById('menu-'+ config_menu_number);
 		var dropdown_shadow = document.getElementById('ext-gen2472');
 		
 		upload_bin.addEventListener('click', function(){
@@ -173,16 +183,16 @@ function addUploadOption () {
 
 //Function to expand height of the configuration dropdown menu so you can see the new option
 //There's a bug here.  The bottom colum of devices gets bigger but the dropdown doesn't...lol
-function expandDropdown () {
+function expandDropdown(config_menu_number) {
 	//Increase Length of Dropdown and Shadow, everything gets +28 height
-		dropdown_parent = document.getElementById('menu-1061');
-		dropdown_parent.style.cssText += "height: 252px"
+		dropdown_parent = document.getElementById('menu-' + config_menu_number);
+		dropdown_parent.style.cssText += "height: 252px";
 		
 		dropdown_body = document.getElementById('menu-1061-body');
 		dropdown_body.style.cssText += "height: 252px";
 		
 		dropdown_inner = document.getElementById('menu-1061-innerCt');
-		dropdown_inner.style.cssText += "height: 252px"
+		dropdown_inner.style.cssText += "height: 252px";
 		
 		// this number appears to change!
 		dropdown_shadow = document.getElementById('ext-gen2475');
@@ -268,24 +278,19 @@ function createUploadBox() {
 
 	
 	//Read the bin when upload file is clicked
-	var uploadFileButton = document.getElementById("upload-bin-button");
+	let uploadFileButton = document.getElementById("upload-bin-button");
 	uploadFileButton.addEventListener("click", function(){
 		//tell user request has been sent
 		document.getElementById('upload-modal-body-1099').innerHTML = "<p>Bin upload in progress...</p>"
 		
 		uploadFileButton.disabled = true;
 		
-		var file = chooseFileButton.files[0];
+		let file = chooseFileButton.files[0];
 		fReader.readAsBinaryString(file);
 	});
 	
 
-};
-
-
-
-
-
+}
 
 
 //This function sends your configuration to a router
@@ -341,7 +346,7 @@ function PostConfig(ncmJson) {
 	}).then( function(xhrPut) {
 		
 		//get bin_box so we can fill it with the result of the put
-		var bin_box_modal = document.getElementById("upload-modal-body-1099")
+		let bin_box_modal = document.getElementById("upload-modal-body-1099")
 		console.log(xhrPut.statusText);
 
 		//Print the result of the upload
@@ -356,7 +361,7 @@ function PostConfig(ncmJson) {
 		}
 		
 		// Clear the message after the user closes the modal-body
-		var closeButton = document.getElementById("close-bin-1099");
+		let closeButton = document.getElementById("close-bin-1099");
 		
 		function resetText() {
 			// reset inner text
@@ -371,7 +376,7 @@ function PostConfig(ncmJson) {
 		
 		closeButton.addEventListener("click", resetText);
 	});
-};
+}
 
 
 //Todo - add a listener to the "devices" button to reload the new configuration menu	
