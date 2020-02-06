@@ -3,12 +3,12 @@ async function findParent(time) {
 
 	console.log('search for parent');
 	
-	var divTags = document.getElementsByTagName("div");
-	var parent;
+	let divTags = document.getElementsByTagName("div");
+	let parent;
 	
 	// loop until parent is found
 	while (true) {
-		for (var i = 0; i < divTags.length; i++) {
+		for (let i = 0; i < divTags.length; i++) {
 			// check if element has an id attributes
 			if (divTags[i].getAttribute("id")){
 				
@@ -16,12 +16,12 @@ async function findParent(time) {
 				if (divTags[i].getAttribute("id").includes("ecm-core-view-devices-Routers")){
 					
 					// make sure it isn't the "...devices-Routers-1254-body" id
-					if (divTags[i].getAttribute("id").includes("body") == false) {
+					if (divTags[i].getAttribute("id").includes("body") === false) {
 						parent = divTags[i];
 					}
 				}
 			}
-		};
+		}
 		if (parent) {
 			console.log('found parent');
 			return parent;
@@ -29,7 +29,7 @@ async function findParent(time) {
 		else {
 			console.log('searching again');
 			await new Promise((resolve, reject) => setTimeout(resolve, time));
-		};
+		}
 	}
 }
 
@@ -38,19 +38,20 @@ async function findChild(text, span_class, parent, time) {
 	console.log('searching for child');
 	console.log(parent);
 	
-	var spanTags = document.getElementsByTagName("span");
-	var child;
+	let spanTags = document.getElementsByTagName("span");
+	let child;
 	
 	while (true) {
-		var parent = await findParent();
+		parent = await findParent();
 		
-		for (var i = 0; i < spanTags.length; i++) {
+		for (let i = 0; i < spanTags.length; i++) {
 			// check for class match
-			if (spanTags[i].getAttribute("class") == span_class) {
+			if (spanTags[i].getAttribute("class") === span_class) {
+				
 				// check for text match
-				if (spanTags[i].textContent == text){
+				if (spanTags[i].textContent === text){
+					
 					// check that it's a child of parent
-					console.log(spanTags[i])
 					if (parent.contains(spanTags[i])){
 						child = spanTags[i];
 					}
@@ -61,31 +62,34 @@ async function findChild(text, span_class, parent, time) {
 		// check if config menu was found.  Exit if it was, search again if it wasn't
 		if (child) {
 			console.log('found config menu');
-			console.log(child);
 			return child
 		}
 		else {
 			console.log('searching again');
 			await new Promise((resolve, reject) => setTimeout(resolve, time));
-		};
-	};
+		}
+	}
 }
 
-
-findParent(5000).then(parent => findChild('Configuration', "x-btn-inner x-btn-inner-center", parent, 5000));
-
+// Find the Configuration Menu by first finding the Routers page parent and then the config menu child of it
+// We have to find the parent first otherwise the Access Points configuration menu gets chosen instead
+findParent(5000)
+	.then(parent => findChild('Configuration', "x-btn-inner x-btn-inner-center", parent, 5000)
+		.then(child => run(child))); //Pass the config menu child to our run function
 
 // all the functions to be run when program is activated.  This is probably bad practice but its better than what I had before. 
 function run(configuration_menu) {
+	console.log(configuration_menu)
 	addDropdownListeners(configuration_menu);
 	
 	document.getElementById('app-devices-button').addEventListener('click', function(){
-		searchForConfigurationButton('Configuration', 5000);
+		// Add a listener so that we search for the configuration menu every time the Devices page is clicked/gone to
+		findParent(5000).then(parent => findChild('Configuration', "x-btn-inner x-btn-inner-center", parent, 5000));
 	});
 	
 	// recursively add event listeners to reload when the devices button is clicked
 	createUploadBox();
-};
+}
 
 
 
