@@ -3,12 +3,12 @@ async function findParent(time) {
 
 	console.log('search for parent');
 	
-	var divTags = document.getElementsByTagName("div");
-	var parent;
+	let divTags = document.getElementsByTagName("div");
+	let parent;
 	
 	// loop until parent is found
 	while (true) {
-		for (var i = 0; i < divTags.length; i++) {
+		for (let i = 0; i < divTags.length; i++) {
 			// check if element has an id attributes
 			if (divTags[i].getAttribute("id")){
 				
@@ -16,12 +16,12 @@ async function findParent(time) {
 				if (divTags[i].getAttribute("id").includes("ecm-core-view-devices-Routers")){
 					
 					// make sure it isn't the "...devices-Routers-1254-body" id
-					if (divTags[i].getAttribute("id").includes("body") == false) {
+					if (divTags[i].getAttribute("id").includes("body") === false) {
 						parent = divTags[i];
 					}
 				}
 			}
-		};
+		}
 		if (parent) {
 			console.log('found parent');
 			return parent;
@@ -29,7 +29,7 @@ async function findParent(time) {
 		else {
 			console.log('searching again');
 			await new Promise((resolve, reject) => setTimeout(resolve, time));
-		};
+		}
 	}
 }
 
@@ -38,19 +38,20 @@ async function findChild(text, span_class, parent, time) {
 	console.log('searching for child');
 	console.log(parent);
 	
-	var spanTags = document.getElementsByTagName("span");
-	var child;
+	let spanTags = document.getElementsByTagName("span");
+	let child;
 	
 	while (true) {
-		var parent = await findParent();
+		parent = await findParent();
 		
-		for (var i = 0; i < spanTags.length; i++) {
+		for (let i = 0; i < spanTags.length; i++) {
 			// check for class match
-			if (spanTags[i].getAttribute("class") == span_class) {
+			if (spanTags[i].getAttribute("class") === span_class) {
+				
 				// check for text match
-				if (spanTags[i].textContent == text){
+				if (spanTags[i].textContent === text){
+					
 					// check that it's a child of parent
-					console.log(spanTags[i])
 					if (parent.contains(spanTags[i])){
 						child = spanTags[i];
 					}
@@ -61,31 +62,37 @@ async function findChild(text, span_class, parent, time) {
 		// check if config menu was found.  Exit if it was, search again if it wasn't
 		if (child) {
 			console.log('found config menu');
-			console.log(child);
 			return child
 		}
 		else {
 			console.log('searching again');
 			await new Promise((resolve, reject) => setTimeout(resolve, time));
-		};
-	};
+		}
+	}
 }
 
-
-findParent(5000).then(parent => findChild('Configuration', "x-btn-inner x-btn-inner-center", parent, 5000));
-
+// Find the Configuration Menu by first finding the Routers page parent and then the config menu child of it
+// We have to find the parent first otherwise the Access Points configuration menu gets chosen instead
+findParent(5000)
+	.then(parent => findChild('Configuration', "x-btn-inner x-btn-inner-center", parent, 5000)
+		.then(child => run(child))); //Pass the config menu child to our run function
 
 // all the functions to be run when program is activated.  This is probably bad practice but its better than what I had before. 
 function run(configuration_menu) {
+	console.log(configuration_menu);
+
+	// Add the listeners to insert the new upload bin button into the configuration dropdown
 	addDropdownListeners(configuration_menu);
-	
+
+	// Add listeners to re-add all of our custom elements when returning to the devices page
 	document.getElementById('app-devices-button').addEventListener('click', function(){
-		searchForConfigurationButton('Configuration', 5000);
+		// Add a listener so that we search for the configuration menu every time the Devices page is clicked/gone to
+		findParent(5000).then(parent => findChild('Configuration', "x-btn-inner x-btn-inner-center", parent, 5000));
 	});
 	
 	// recursively add event listeners to reload when the devices button is clicked
 	createUploadBox();
-};
+}
 
 
 
@@ -94,15 +101,24 @@ function run(configuration_menu) {
 
 // Listen for menu clicks and respond accordingly 
 function addDropdownListeners(configuration_menu) {
+
+	// Calculate number of main configuration button.
+	let configuration_menu_num = configuration_menu.id.split("-")[1];
+	let configuration = document.getElementById('button-' + configuration_menu_num);
+
+	// find the number of the other config menu elements.  They're always the number of the config menu + 1
+	let config_child_num = configuration_menu.id;
+	config_child_num = (parseInt(config_child_num.split("-")[1], 10) + 1).toString();
+
 	//listener for configuration button click
-	configuration_menu.addEventListener('click', function(){
+	configuration.addEventListener('click', function(){
 		// BUG / TODO both of these functions need new ways to find the config menu elements they need 
-		addUploadOption();
-		expandDropdown();
+		addUploadOption(config_child_num);
+		expandDropdown(config_child_num);
 		
 		//adds listener to redraw dropdown on mouseover
 		configuration_menu.addEventListener('mouseover', function() {
-			expandDropdown();
+			expandDropdown(config_child_num);
 		});
 	});
 }
@@ -131,9 +147,9 @@ upload_bin.addEventListener('mouseout', function(){
 upload_bin.setAttribute('class', 'x-component x-box-item x-component-default x-menu-item')});
 
 
-//Redraw the Configuration Dropdown 
-function addUploadOption () {
-	//Check if upload bin menu item already exists
+// Redraw the Configuration Dropdown
+function addUploadOption(config_child_num) {
+	// Check if upload bin menu item already exists
 	if (document.getElementById("menuitem-1099")) {
 		//Make dropdown area larger so you can see the new button 
 		return
@@ -141,16 +157,18 @@ function addUploadOption () {
 	//Create upload bin menu item
 	else {
 		//Find dropdown
-		dropdown = document.getElementById("menu-1061-targetEl");
+		let dropdown = document.getElementById("menu-"+ config_child_num +"-targetEl");
 		
 		//Add upload bin item to dropdown
 		dropdown.appendChild(upload_bin);
 		
 		// Event listener for opening dialog box and hidding dropdown
-		var bin_box = document.getElementById('upload-bin-1099');
-		var main_dropdown = document.getElementById('menu-1061');
-		var dropdown_shadow = document.getElementById('ext-gen2472');
-		
+		let bin_box = document.getElementById('upload-bin-1099');
+
+		// todo - manage shadow display
+		let main_dropdown = document.getElementById('menu-'+ config_child_num);
+		let dropdown_shadow = document.getElementById('ext-gen2472');
+
 		upload_bin.addEventListener('click', function(){
 			if (bin_box.style.display = "none") {
 				bin_box.style.display = "block";
@@ -168,20 +186,21 @@ function addUploadOption () {
 
 
 //Function to expand height of the configuration dropdown menu so you can see the new option
-//There's a bug here.  The bottom colum of devices gets bigger but the dropdown doesn't...lol
-function expandDropdown () {
+//There's a bug here.  The bottom column of devices gets bigger but the dropdown doesn't...lol
+function expandDropdown(config_child_num) {
 	//Increase Length of Dropdown and Shadow, everything gets +28 height
-		dropdown_parent = document.getElementById('menu-1061');
-		dropdown_parent.style.cssText += "height: 252px"
+		console.log('expanding dropdown');
+		let dropdown_parent = document.getElementById('menu-' + config_child_num);
+		dropdown_parent.style.cssText += "height: 252px";
 		
-		dropdown_body = document.getElementById('menu-1061-body');
+		let dropdown_body = document.getElementById('menu-' + config_child_num + '-body');
 		dropdown_body.style.cssText += "height: 252px";
 		
-		dropdown_inner = document.getElementById('menu-1061-innerCt');
-		dropdown_inner.style.cssText += "height: 252px"
+		let dropdown_inner = document.getElementById('menu-' + config_child_num + '-innerCt');
+		dropdown_inner.style.cssText += "height: 252px";
 		
 		// this number appears to change!
-		dropdown_shadow = document.getElementById('ext-gen2475');
+		let dropdown_shadow = document.getElementById('ext-gen2475');
 		dropdown_shadow.style.cssText += 'height: 248px;';
 		
 		// hide shadow when user mouses away from configuration 
@@ -264,24 +283,19 @@ function createUploadBox() {
 
 	
 	//Read the bin when upload file is clicked
-	var uploadFileButton = document.getElementById("upload-bin-button");
+	let uploadFileButton = document.getElementById("upload-bin-button");
 	uploadFileButton.addEventListener("click", function(){
 		//tell user request has been sent
 		document.getElementById('upload-modal-body-1099').innerHTML = "<p>Bin upload in progress...</p>"
 		
 		uploadFileButton.disabled = true;
 		
-		var file = chooseFileButton.files[0];
+		let file = chooseFileButton.files[0];
 		fReader.readAsBinaryString(file);
 	});
 	
 
-};
-
-
-
-
-
+}
 
 
 //This function sends your configuration to a router
@@ -337,7 +351,7 @@ function PostConfig(ncmJson) {
 	}).then( function(xhrPut) {
 		
 		//get bin_box so we can fill it with the result of the put
-		var bin_box_modal = document.getElementById("upload-modal-body-1099")
+		let bin_box_modal = document.getElementById("upload-modal-body-1099")
 		console.log(xhrPut.statusText);
 
 		//Print the result of the upload
@@ -352,7 +366,7 @@ function PostConfig(ncmJson) {
 		}
 		
 		// Clear the message after the user closes the modal-body
-		var closeButton = document.getElementById("close-bin-1099");
+		let closeButton = document.getElementById("close-bin-1099");
 		
 		function resetText() {
 			// reset inner text
@@ -367,7 +381,7 @@ function PostConfig(ncmJson) {
 		
 		closeButton.addEventListener("click", resetText);
 	});
-};
+}
 
 
 //Todo - add a listener to the "devices" button to reload the new configuration menu	
