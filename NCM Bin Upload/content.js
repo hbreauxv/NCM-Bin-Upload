@@ -87,7 +87,9 @@ function run(configuration_menu) {
 	// Add listeners to re-add all of our custom elements when returning to the devices page
 	document.getElementById('app-devices-button').addEventListener('click', function(){
 		// Add a listener so that we search for the configuration menu every time the Devices page is clicked/gone to
-		findParent(5000).then(parent => findChild('Configuration', "x-btn-inner x-btn-inner-center", parent, 5000));
+		findParent(5000)
+			.then(parent => findChild('Configuration', "x-btn-inner x-btn-inner-center", parent, 5000)
+				.then(child => run(child))); // Recursion! Hooray!
 	});
 	
 	// recursively add event listeners to reload when the devices button is clicked
@@ -122,7 +124,6 @@ function addDropdownListeners(configuration_menu) {
 		});
 	});
 }
-
 
 
 //Create upload_bin dropdown item
@@ -182,7 +183,6 @@ function addUploadOption(config_child_num) {
 
 	}
 }
-
 
 
 //Function to expand height of the configuration dropdown menu so you can see the new option
@@ -269,7 +269,7 @@ function createUploadBox() {
 		if (ncmJson["configuration"][0]["system"]["admin"]["product_name"]) {
 			delete ncmJson["configuration"][0]["system"]["admin"].product_name
 		}
-		//remove ecmversion from the bin
+		//remove ecm version from the bin
 		if (ncmJson["configuration"][0]["ecm"]) {
 			delete ncmJson["configuration"][0].ecm
 		}
@@ -360,7 +360,7 @@ function PostConfig(ncmJson) {
 			bin_box_modal.innerHTML = "<p> Upload Result: " + xhrPut.statusText + "!</p>"
 		} else {
 			bin_box_modal.innerHTML = `<p> Upload Result: ` + xhrPut.statusText + `</p>
-			<p>Check if the bin you upload is for the same router and firmware as the router you uploaded it to.</p>
+			<p>Check if the bin you uploaded is for the same router and firmware as the router you uploaded it to.</p>
 			<p>Response details: ` + xhrPut.responseText + `</p>
 			`
 		}
