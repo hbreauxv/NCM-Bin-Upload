@@ -1,7 +1,7 @@
 /* The Modal (background) */
 .bin_box {
   display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
+  position: absolute;
   z-index: 1; /* Sit on top */
   left: 0;
   top: 0;
@@ -31,8 +31,8 @@
 /* Modal Content */
 .modal-content {
   position: relative;
-  background-color: #fefefe;
   margin: auto;
+  background-color: #fefefe;
   padding: 0;
   border: 1px solid #888;
   width: 80%;
