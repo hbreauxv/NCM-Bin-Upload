@@ -89,11 +89,18 @@ function run(configuration_menu) {
 		// Add a listener so that we search for the configuration menu every time the Devices page is clicked/gone to
 		findParent(5000)
 			.then(parent => findChild('Configuration', "x-btn-inner x-btn-inner-center", parent, 5000)
-				.then(child => run(child))); // Recursion! Hooray!
+				.then(child => redraw(child))); // Recursion! Hooray!
 	});
 	
 	// recursively add event listeners to reload when the devices button is clicked
 	createUploadBox();
+}
+
+// function to re-add the upload bin option to the configuration menu
+function redraw(configuration_menu) {
+	console.log("re-adding configuration menu");
+	// Add the listeners to insert the new upload bin button into the configuration dropdown
+	addDropdownListeners(configuration_menu);
 }
 
 
