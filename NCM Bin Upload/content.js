@@ -267,6 +267,7 @@ function readAndUpload(){
 	// we have to recheck what file is selected here!!
 	let chooseFileButton = document.getElementById("bin_file");
 	let file = chooseFileButton.files[0];
+	console.log(file);
 
 
 	// Read file
