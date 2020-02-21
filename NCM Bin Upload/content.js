@@ -89,11 +89,18 @@ function run(configuration_menu) {
 		// Add a listener so that we search for the configuration menu every time the Devices page is clicked/gone to
 		findParent(5000)
 			.then(parent => findChild('Configuration', "x-btn-inner x-btn-inner-center", parent, 5000)
-				.then(child => run(child))); // Recursion! Hooray!
+				.then(child => redraw(child))); // Recursion! Hooray!
 	});
 	
 	// recursively add event listeners to reload when the devices button is clicked
 	createUploadBox();
+}
+
+// function to re-add the upload bin option to the configuration menu
+function redraw(configuration_menu) {
+	console.log("re-adding configuration menu");
+	// Add the listeners to insert the new upload bin button into the configuration dropdown
+	addDropdownListeners(configuration_menu);
 }
 
 
@@ -214,7 +221,7 @@ function expandDropdown(config_child_num) {
 
 function createUploadBox() {
 	//Create bin upload dialog box
-	var bin_box = document.createElement('div');
+	let bin_box = document.createElement('div');
 	bin_box.style = 'display: none; position: fixed; width: 450px; height: 175px; right: auto; left: 40%; top: 30%; z-index: 19000;';
 	bin_box.id = 'upload-bin-1099';
 	bin_box.tabindex = '-1';
@@ -238,62 +245,69 @@ function createUploadBox() {
 		</div>
 		
 	`
-	
+
 	//Insert into page
-	var body = document.getElementById('ext-gen1024');
+	let body = document.getElementById('ext-gen1024');
 	body.appendChild(bin_box);
-	
-	var closeButton = document.getElementById("close-bin-1099");
-	
-	closeButton.onclick = function() {
+
+	// Close the modal listener :)
+	let closeButton = document.getElementById("close-bin-1099");
+	closeButton.onclick = function () {
 		bin_box.style.display = "none";
 	};
-	
-	//Add choose file button listener
-	var chooseFileButton = document.getElementById("bin_file");
-	var fReader = new FileReader();
-	
-	//Decodes and sends the config to your device when upload bin is pressed
+
+	// Onclick to read the file and upload to NCM
+	let uploadFileButton = document.getElementById("upload-bin-button");
+	uploadFileButton.onclick = readAndUpload;
+}
+
+// Reads and uploads the bin file.  Called when the Upload File button is clicked.
+function readAndUpload(){
+
+	// we have to recheck what file is selected here!!
+	let chooseFileButton = document.getElementById("bin_file");
+	let file = chooseFileButton.files[0];
+	console.log(file);
+
+
+	// Read file
+	let fReader = new FileReader();
+	fReader.readAsBinaryString(file);
+
+	// Decodes and sends the config to NCM
 	fReader.onload = function(e) {
 		//decompress the bin file.  bins are compressed using zlib and the pako library inflates them to give the str result
-		var decompressed = pako.inflate(e.target.result);
-		var strData = String.fromCharCode.apply(null, new Uint16Array(decompressed));
-		
+		let decompressed = pako.inflate(e.target.result);
+		let strData = String.fromCharCode.apply(null, new Uint16Array(decompressed));
+
 		//decode the decompressed bin as json
-		var binJson = JSON.parse(strData);
-		
-		//new var that stores the config in the format that NCM wants
-		var ncmJson = {"configuration":[binJson[0]["config"],[]]};
-		
+		let binJson = JSON.parse(strData);
+
+		// new var that stores the config in the format that NCM wants
+		let ncmJson = {"configuration":[binJson[0]["config"],[]]};
+
 		//remove the product name from the bin
 		if (ncmJson["configuration"][0]["system"]["admin"]["product_name"]) {
 			delete ncmJson["configuration"][0]["system"]["admin"].product_name
 		}
+
 		//remove ecm version from the bin
 		if (ncmJson["configuration"][0]["ecm"]) {
 			delete ncmJson["configuration"][0].ecm
 		}
-		
+
 		//print the version of the JSON thats going to be sent to NCM
 		console.log(ncmJson);
-		
+
 		PostConfig(ncmJson);
 
-	};
-
-	
-	//Read the bin when upload file is clicked
-	let uploadFileButton = document.getElementById("upload-bin-button");
-	uploadFileButton.addEventListener("click", function(){
-		//tell user request has been sent
+		//tell user upload request has begun
 		document.getElementById('upload-modal-body-1099').innerHTML = "<p>Bin upload in progress...</p>"
-		
+
+		// Disable upload button
+		let uploadFileButton = document.getElementById("upload-bin-button");
 		uploadFileButton.disabled = true;
-		
-		let file = chooseFileButton.files[0];
-		fReader.readAsBinaryString(file);
-	});
-	
+	};
 
 }
 
