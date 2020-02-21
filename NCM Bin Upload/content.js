@@ -245,62 +245,66 @@ function createUploadBox() {
 		</div>
 		
 	`
-	
+
 	//Insert into page
 	var body = document.getElementById('ext-gen1024');
 	body.appendChild(bin_box);
-	
+
+	// Close the modal listener :)
 	var closeButton = document.getElementById("close-bin-1099");
-	
-	closeButton.onclick = function() {
+	closeButton.onclick = function () {
 		bin_box.style.display = "none";
 	};
-	
-	//Add choose file button listener
-	var chooseFileButton = document.getElementById("bin_file");
-	var fReader = new FileReader();
-	
-	//Decodes and sends the config to your device when upload bin is pressed
+
+	// Onclick to read the file and upload to NCM
+	let uploadFileButton = document.getElementById("upload-bin-button");
+	uploadFileButton.onclick = readAndUpload;
+}
+
+function readAndUpload(){
+	//tell user upload request has begun
+	document.getElementById('upload-modal-body-1099').innerHTML = "<p>Bin upload in progress...</p>"
+
+	// Disable the upload file button
+	let uploadFileButton = document.getElementById("upload-bin-button");
+	uploadFileButton.disabled = true;
+
+	// we have to recheck what file is selected here!!
+	let chooseFileButton = document.getElementById("bin_file");
+	let file = chooseFileButton.files[0];
+	console.log(chooseFileButton.files);
+
+	// Read file
+	let fReader = new FileReader();
+	fReader.readAsBinaryString(file);
+
+	// Decodes and sends the config to NCM
 	fReader.onload = function(e) {
 		//decompress the bin file.  bins are compressed using zlib and the pako library inflates them to give the str result
-		var decompressed = pako.inflate(e.target.result);
-		var strData = String.fromCharCode.apply(null, new Uint16Array(decompressed));
-		
+		let decompressed = pako.inflate(e.target.result);
+		let strData = String.fromCharCode.apply(null, new Uint16Array(decompressed));
+
 		//decode the decompressed bin as json
-		var binJson = JSON.parse(strData);
-		
-		//new var that stores the config in the format that NCM wants
-		var ncmJson = {"configuration":[binJson[0]["config"],[]]};
-		
+		let binJson = JSON.parse(strData);
+
+		// new var that stores the config in the format that NCM wants
+		let ncmJson = {"configuration":[binJson[0]["config"],[]]};
+
 		//remove the product name from the bin
 		if (ncmJson["configuration"][0]["system"]["admin"]["product_name"]) {
 			delete ncmJson["configuration"][0]["system"]["admin"].product_name
 		}
+
 		//remove ecm version from the bin
 		if (ncmJson["configuration"][0]["ecm"]) {
 			delete ncmJson["configuration"][0].ecm
 		}
-		
+
 		//print the version of the JSON thats going to be sent to NCM
 		console.log(ncmJson);
-		
+
 		PostConfig(ncmJson);
-
 	};
-
-	
-	//Read the bin when upload file is clicked
-	let uploadFileButton = document.getElementById("upload-bin-button");
-	uploadFileButton.addEventListener("click", function(){
-		//tell user request has been sent
-		document.getElementById('upload-modal-body-1099').innerHTML = "<p>Bin upload in progress...</p>"
-		
-		uploadFileButton.disabled = true;
-		
-		let file = chooseFileButton.files[0];
-		fReader.readAsBinaryString(file);
-	});
-	
 
 }
 
