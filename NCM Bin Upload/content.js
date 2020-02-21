@@ -221,7 +221,7 @@ function expandDropdown(config_child_num) {
 
 function createUploadBox() {
 	//Create bin upload dialog box
-	var bin_box = document.createElement('div');
+	let bin_box = document.createElement('div');
 	bin_box.style = 'display: none; position: fixed; width: 450px; height: 175px; right: auto; left: 40%; top: 30%; z-index: 19000;';
 	bin_box.id = 'upload-bin-1099';
 	bin_box.tabindex = '-1';
@@ -247,11 +247,11 @@ function createUploadBox() {
 	`
 
 	//Insert into page
-	var body = document.getElementById('ext-gen1024');
+	let body = document.getElementById('ext-gen1024');
 	body.appendChild(bin_box);
 
 	// Close the modal listener :)
-	var closeButton = document.getElementById("close-bin-1099");
+	let closeButton = document.getElementById("close-bin-1099");
 	closeButton.onclick = function () {
 		bin_box.style.display = "none";
 	};
@@ -261,18 +261,13 @@ function createUploadBox() {
 	uploadFileButton.onclick = readAndUpload;
 }
 
+// Reads and uploads the bin file.  Called when the Upload File button is clicked.
 function readAndUpload(){
-	//tell user upload request has begun
-	document.getElementById('upload-modal-body-1099').innerHTML = "<p>Bin upload in progress...</p>"
-
-	// Disable the upload file button
-	let uploadFileButton = document.getElementById("upload-bin-button");
-	uploadFileButton.disabled = true;
 
 	// we have to recheck what file is selected here!!
 	let chooseFileButton = document.getElementById("bin_file");
 	let file = chooseFileButton.files[0];
-	console.log(chooseFileButton.files);
+
 
 	// Read file
 	let fReader = new FileReader();
@@ -304,6 +299,13 @@ function readAndUpload(){
 		console.log(ncmJson);
 
 		PostConfig(ncmJson);
+
+		//tell user upload request has begun
+		document.getElementById('upload-modal-body-1099').innerHTML = "<p>Bin upload in progress...</p>"
+
+		// Disable upload button
+		let uploadFileButton = document.getElementById("upload-bin-button");
+		uploadFileButton.disabled = true;
 	};
 
 }
