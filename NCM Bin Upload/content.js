@@ -77,7 +77,7 @@ findParent(5000)
 	.then(parent => findChild('Configuration', "x-btn-inner x-btn-inner-center", parent, 5000)
 		.then(child => run(child))); //Pass the config menu child to our run function
 
-// all the functions to be run when program is activated.  This is probably bad practice but its better than what I had before. 
+// all the functions to be run when program is activated.
 function run(configuration_menu) {
 	console.log(configuration_menu);
 
@@ -89,10 +89,10 @@ function run(configuration_menu) {
 		// Add a listener so that we search for the configuration menu every time the Devices page is clicked/gone to
 		findParent(5000)
 			.then(parent => findChild('Configuration', "x-btn-inner x-btn-inner-center", parent, 5000)
-				.then(child => redraw(child))); // Recursion! Hooray!
+				.then(child => redraw(child)));
 	});
 	
-	// recursively add event listeners to reload when the devices button is clicked
+	// Add event listeners to reload when the devices button is clicked
 	createUploadBox();
 }
 
@@ -102,10 +102,6 @@ function redraw(configuration_menu) {
 	// Add the listeners to insert the new upload bin button into the configuration dropdown
 	addDropdownListeners(configuration_menu);
 }
-
-
-
-//Wait for the Devices button to display and add listeners to re-add the upload bin button to the page. od 'app-devices-button'
 
 
 // Listen for menu clicks and respond accordingly 
@@ -397,8 +393,5 @@ function PostConfig(ncmJson) {
 	});
 }
 
-
-//Todo - add a listener to the "devices" button to reload the new configuration menu	
-	
 
 //Todo - Add all features to the cradlepointecm.com/groups page
