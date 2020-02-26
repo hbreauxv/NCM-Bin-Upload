@@ -117,7 +117,8 @@ function addDropdownListeners(configuration_menu) {
 
 	//listener for configuration button click
 	configuration.addEventListener('click', function(){
-		// BUG / TODO both of these functions need new ways to find the config menu elements they need 
+
+		//Adds the upload bin option and expands the dropdown menu so you can see it
 		addUploadOption(config_child_num);
 		expandDropdown(config_child_num);
 		
