@@ -203,12 +203,7 @@ function expandDropdown(config_child_num) {
 		let dropdown_inner = document.getElementById('menu-' + config_child_num + '-innerCt');
 		dropdown_inner.style.cssText += "height: 252px";
 		
-		// this number appears to change!
-		let dropdown_shadow = document.getElementById('ext-gen2475');
-		dropdown_shadow.style.cssText += 'height: 248px;';
-		
-		// hide shadow when user mouses away from configuration 
-		//dropdown.addEventListener('blur', function(){dropdown_shadow.style = 'z-index: 19000; right: auto; left: 253px; top: 183px; width: 163px; height: 248px; box-shadow: rgb(136, 136, 136) 0px 0px 6px; display: hidden;'});
+		// Todo - Create method to find the shadow for the dropdown menu and expand the size
 }
 
 
