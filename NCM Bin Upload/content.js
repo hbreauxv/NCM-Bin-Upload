@@ -71,8 +71,8 @@ async function findChild(text, span_class, parent, time) {
     }
 }
 
-// Find the Configuration Menu by first finding the Routers page parent and then the config menu child of it
-// We have to find the parent first otherwise the Access Points configuration menu gets chosen instead
+/* Find the Configuration Menu by first finding the Routers page parent and then the config menu child of it
+We have to find the parent first otherwise the Access Points configuration menu gets chosen instead */
 findParent(5000)
     .then(parent => findChild('Configuration', "x-btn-inner x-btn-inner-center", parent, 5000)
         .then(child => run(child))); //Pass the config menu child to our run function
@@ -103,7 +103,6 @@ function redraw(configuration_menu) {
     addDropdownListeners(configuration_menu);
 }
 
-
 // Listen for menu clicks and respond accordingly
 function addDropdownListeners(configuration_menu) {
 
@@ -129,7 +128,6 @@ function addDropdownListeners(configuration_menu) {
     });
 }
 
-
 //Create upload_bin dropdown item
 var upload_bin = document.createElement('div');
 upload_bin.setAttribute('class', 'x-component x-box-item x-component-default x-menu-item');
@@ -150,7 +148,6 @@ upload_bin.setAttribute('class', 'x-component x-box-item x-component-default x-m
 
 upload_bin.addEventListener('mouseout', function(){
 upload_bin.setAttribute('class', 'x-component x-box-item x-component-default x-menu-item')});
-
 
 // Redraw the Configuration Dropdown
 function addUploadOption(config_child_num) {
@@ -188,7 +185,6 @@ function addUploadOption(config_child_num) {
     }
 }
 
-
 //Function to expand height of the configuration dropdown menu so you can see the new option
 //There's a bug here.  The bottom column of devices gets bigger but the dropdown doesn't...lol
 function expandDropdown(config_child_num) {
@@ -205,11 +201,6 @@ function expandDropdown(config_child_num) {
 
         // Todo - Create method to find the shadow for the dropdown menu and expand the size
 }
-
-
-
-
-
 
 function createUploadBox() {
     //Create bin upload dialog box
@@ -236,7 +227,7 @@ function createUploadBox() {
           
         </div>
         
-    `
+    `;
 
     //Insert into page
     let body = document.getElementById('ext-gen1024');
@@ -302,7 +293,6 @@ function readAndUpload(){
     };
 
 }
-
 
 //This function sends your configuration to a router
 function PostConfig(ncmJson) {
@@ -377,7 +367,7 @@ function PostConfig(ncmJson) {
         function resetText() {
             // reset inner text
             bin_box_modal.innerHTML = `<p>Select Bin File</p>
-            <input type="file" id="bin_file" name="bin"></input>`
+            <input type="file" id="bin_file" name="bin"></input>`;
 
             //make upload bin button clickable again
             document.getElementById("upload-bin-button").disabled = false;
@@ -388,6 +378,5 @@ function PostConfig(ncmJson) {
         closeButton.addEventListener("click", resetText);
     });
 }
-
 
 //Todo - Add all features to the cradlepointecm.com/groups page
