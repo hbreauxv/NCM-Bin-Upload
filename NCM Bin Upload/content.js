@@ -8,20 +8,13 @@ async function findParent(time) {
 
     // loop until parent is found
     while (true) {
-        for (let i = 0; i < divTags.length; i++) {
-            // check if element has an id attributes
-            if (divTags[i].getAttribute("id")){
-
-                // check for id match
-                if (divTags[i].getAttribute("id").includes("ecm-core-view-devices-Routers")){
-
-                    // make sure it isn't the "...devices-Routers-1254-body" id
-                    if (divTags[i].getAttribute("id").includes("body") === false) {
-                        parent = divTags[i];
-                    }
+        Array.prototype.slice.call(divTags).forEach(function(divTag) {
+            if (divTag.getAttribute("id")) {
+                if (divTag.getAttribute("id").includes("ecm-core-view-devices-Routers") && divTag.getAttribute("id").includes("body") === false) {
+                    parent = divTag
                 }
             }
-        }
+        });
         if (parent) {
             console.log('found parent');
             return parent;
