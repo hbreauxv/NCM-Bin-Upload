@@ -8,20 +8,13 @@ async function findParent(time) {
 
     // loop until parent is found
     while (true) {
-        for (let i = 0; i < divTags.length; i++) {
-            // check if element has an id attributes
-            if (divTags[i].getAttribute("id")){
-
-                // check for id match
-                if (divTags[i].getAttribute("id").includes("ecm-core-view-devices-Routers")){
-
-                    // make sure it isn't the "...devices-Routers-1254-body" id
-                    if (divTags[i].getAttribute("id").includes("body") === false) {
-                        parent = divTags[i];
-                    }
+        Array.prototype.slice.call(divTags).forEach(function(divTag) {
+            if (divTag.getAttribute("id")) {
+                if (divTag.getAttribute("id").includes("ecm-core-view-devices-Routers") && divTag.getAttribute("id").includes("body") === false) {
+                    parent = divTag
                 }
             }
-        }
+        });
         if (parent) {
             console.log('found parent');
             return parent;
@@ -43,21 +36,13 @@ async function findChild(text, span_class, parent, time) {
 
     while (true) {
         parent = await findParent();
-
-        for (let i = 0; i < spanTags.length; i++) {
-            // check for class match
-            if (spanTags[i].getAttribute("class") === span_class) {
-
-                // check for text match
-                if (spanTags[i].textContent === text){
-
-                    // check that it's a child of parent
-                    if (parent.contains(spanTags[i])){
-                        child = spanTags[i];
-                    }
+        Array.prototype.slice.call(spanTags).forEach(function(spanTag) {
+            if (spanTag.getAttribute("id")) {
+                if (spanTag.getAttribute("class") === span_class && spanTag.textContent === text && parent.contains(spanTag)) {
+                    child = spanTag
                 }
             }
-        }
+        });
 
         // check if config menu was found.  Exit if it was, search again if it wasn't
         if (child) {
