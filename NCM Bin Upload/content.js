@@ -36,21 +36,13 @@ async function findChild(text, span_class, parent, time) {
 
     while (true) {
         parent = await findParent();
-
-        for (let i = 0; i < spanTags.length; i++) {
-            // check for class match
-            if (spanTags[i].getAttribute("class") === span_class) {
-
-                // check for text match
-                if (spanTags[i].textContent === text){
-
-                    // check that it's a child of parent
-                    if (parent.contains(spanTags[i])){
-                        child = spanTags[i];
-                    }
+        Array.prototype.slice.call(spanTags).forEach(function(spanTag) {
+            if (spanTag.getAttribute("id")) {
+                if (spanTag.getAttribute("class") === span_class && spanTag.textContent === text && parent.contains(spanTag)) {
+                    child = spanTag
                 }
             }
-        }
+        });
 
         // check if config menu was found.  Exit if it was, search again if it wasn't
         if (child) {
