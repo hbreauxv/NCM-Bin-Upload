@@ -232,52 +232,64 @@ function createUploadBox() {
 // Reads and uploads the bin file.  Called when the Upload File button is clicked.
 function readAndUpload(){
 
-    // we have to recheck what file is selected here!!
-    let chooseFileButton = document.getElementById("bin_file");
-    let file = chooseFileButton.files[0];
-    console.log(file);
+    try {
+        // we have to recheck what file is selected here!!
+        let chooseFileButton = document.getElementById("bin_file");
+        let file = chooseFileButton.files[0];
+        console.log(file);
 
 
-    // Read file
-    let fReader = new FileReader();
-    fReader.readAsBinaryString(file);
+        // Read file
+        let fReader = new FileReader();
+        fReader.readAsBinaryString(file);
 
-    // Decodes and sends the config to NCM
-    fReader.onload = function(e) {
-        //decompress the bin file.  bins are compressed using zlib and the pako library inflates them to give the str result
-        let decompressed = pako.inflate(e.target.result);
-        let strData = String.fromCharCode.apply(null, new Uint16Array(decompressed));
+        // Decodes and sends the config to NCM
+        fReader.onload = function (e) {
+            try {
+                //decompress the bin file.  bins are compressed using zlib and the pako library inflates them to give the str result
+                let decompressed = pako.inflate(e.target.result);
+                let strData = String.fromCharCode.apply(null, new Uint16Array(decompressed));
 
-        //decode the decompressed bin as json
-        let binJson = JSON.parse(strData);
+                //decode the decompressed bin as json
+                let binJson = JSON.parse(strData);
 
-        // new var that stores the config in the format that NCM wants
-        let ncmJson = {"configuration":[binJson[0]["config"],[binJson[1]]]};
+                // new var that stores the config in the format that NCM wants
+                let ncmJson = {"configuration": [binJson[0]["config"], [binJson[1]]]};
 
-        // remove the product name from the bin.  Turning json into string and looking for "product_name" is the shortest
-        // method i've found for searching for the keys existence.
-        if (JSON.stringify(ncmJson).includes("product_name")) {
-            delete ncmJson["configuration"][0]["system"]["admin"].product_name
-        }
+                // remove the product name from the bin.  Turning json into string and looking for "product_name" is the shortest
+                // method i've found for searching for the keys existence.
+                if (JSON.stringify(ncmJson).includes("product_name")) {
+                    delete ncmJson["configuration"][0]["system"]["admin"].product_name
+                }
 
-        // remove ecm version from the bin.
-        if (JSON.stringify(ncmJson).includes("ecm")) {
-            delete ncmJson["configuration"][0].ecm
-        }
+                // remove ecm version from the bin.
+                if (JSON.stringify(ncmJson).includes("ecm")) {
+                    delete ncmJson["configuration"][0].ecm
+                }
 
-        //print the version of the JSON thats going to be sent to NCM
-        console.log(ncmJson);
+                // Upload to ncm
+                console.log(ncmJson);
+                PostConfig(ncmJson);
 
-        PostConfig(ncmJson);
+                //tell user upload request has begun
+                document.getElementById('upload-modal-body-1099').innerHTML = "<p>Bin upload in progress...</p>";
 
-        //tell user upload request has begun
-        document.getElementById('upload-modal-body-1099').innerHTML = "<p>Bin upload in progress...</p>"
-
-        // Disable upload button
-        let uploadFileButton = document.getElementById("upload-bin-button");
-        uploadFileButton.disabled = true;
-    };
-
+                // Disable upload button
+                let uploadFileButton = document.getElementById("upload-bin-button");
+                uploadFileButton.disabled = true;
+            }
+            catch(err) {
+                console.log(err);
+                document.getElementById('upload-modal-body-1099').innerHTML = "<p>Error occurred: " + String(err) + "</p>";
+                document.getElementById("upload-bin-button").disabled = true;
+            }
+        };
+    }
+    catch(err) {
+        console.log(err);
+        document.getElementById('upload-modal-body-1099').innerHTML = "<p>Error occurred:" + String(err) + "</p>";
+        document.getElementById("upload-bin-button").disabled = true;
+    }
 }
 
 //This function sends your configuration to a router
