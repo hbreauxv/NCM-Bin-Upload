@@ -255,13 +255,14 @@ function readAndUpload(){
         // new var that stores the config in the format that NCM wants
         let ncmJson = {"configuration":[binJson[0]["config"],[binJson[1]]]};
 
-        //remove the product name from the bin
-        if (ncmJson["configuration"][0]["system"]["admin"]["product_name"]) {
+        // remove the product name from the bin.  Turning json into string and looking for "product_name" is the shortest
+        // method i've found for searching for the keys existence.
+        if (JSON.stringify(ncmJson).includes("product_name")) {
             delete ncmJson["configuration"][0]["system"]["admin"].product_name
         }
 
-        //remove ecm version from the bin
-        if (ncmJson["configuration"][0]["ecm"]) {
+        // remove ecm version from the bin.
+        if (JSON.stringify(ncmJson).includes("ecm")) {
             delete ncmJson["configuration"][0].ecm
         }
 
