@@ -184,7 +184,8 @@ function expandDropdown(config_child_num) {
         let dropdown_inner = document.getElementById('menu-' + config_child_num + '-innerCt');
         dropdown_inner.style.cssText += "height: 252px";
 
-        // Todo - Create method to find the shadow for the dropdown menu and expand the size
+        let dropdown_shadow = document.getElementsByClassName("x-css-shadow");
+        dropdown_shadow[0].style.cssText += "height: 248px"
 }
 
 function createUploadBox() {
