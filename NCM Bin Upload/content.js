@@ -250,9 +250,10 @@ function readAndUpload(){
 
         //decode the decompressed bin as json
         let binJson = JSON.parse(strData);
+        console.log(binJson);
 
         // new var that stores the config in the format that NCM wants
-        let ncmJson = {"configuration":[binJson[0]["config"],[]]};
+        let ncmJson = {"configuration":[binJson[0]["config"],[binJson[1]]};
 
         //remove the product name from the bin
         if (ncmJson["configuration"][0]["system"]["admin"]["product_name"]) {
