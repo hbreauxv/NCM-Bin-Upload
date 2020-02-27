@@ -269,7 +269,7 @@ function readAndUpload(){
 
                 // Upload to ncm
                 console.log(ncmJson);
-                PostConfig(ncmJson);
+                putConfig(ncmJson);
 
                 //tell user upload request has begun
                 document.getElementById('upload-modal-body-1099').innerHTML = "<p>Bin upload in progress...</p>";
@@ -293,7 +293,7 @@ function readAndUpload(){
 }
 
 //This function sends your configuration to a router
-function PostConfig(ncmJson) {
+function putConfig(ncmJson) {
 
     //find selected router
     var selected_router = document.getElementsByClassName("x-grid-row-selected");
