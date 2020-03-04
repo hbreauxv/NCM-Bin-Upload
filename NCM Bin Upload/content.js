@@ -1,3 +1,6 @@
+// variable to track height of dropdown menu
+let dropdown_height = 0;
+
 // Find the router/devices view parent of the config menu
 async function findParent(time) {
 
@@ -90,7 +93,6 @@ function redraw(configuration_menu) {
 
 // Listen for menu clicks and respond accordingly
 function addDropdownListeners(configuration_menu) {
-
     // Calculate number of main configuration button.
     let configuration_menu_num = configuration_menu.id.split("-")[1];
     let configuration = document.getElementById('button-' + configuration_menu_num);
@@ -101,7 +103,6 @@ function addDropdownListeners(configuration_menu) {
 
     //listener for configuration button click
     configuration.addEventListener('click', function(){
-
         //Adds the upload bin option and expands the dropdown menu so you can see it
         addUploadOption(config_child_num);
         expandDropdown(config_child_num);
@@ -117,6 +118,7 @@ function addDropdownListeners(configuration_menu) {
 var upload_bin = document.createElement('div');
 upload_bin.setAttribute('class', 'x-component x-box-item x-component-default x-menu-item');
 upload_bin.id = "menuitem-binupload";
+upload_bin.style.cssText = "right: auto; left: 0px; margin: 0px; width: 163px;";
 upload_bin.innerHTML = `
     <a id="menuitem-1073-itemEl" class="x-menu-item-link" href="#" hidefocus="true" unselectable="on" data-qtip="">
         <div role="img" id="menuitem-1073-iconEl" class="x-menu-item-icon gear-icon " style="">
@@ -150,13 +152,8 @@ function addUploadOption(config_child_num) {
 
         // Event listener for opening dialog box and hidding dropdown
         let bin_box = document.getElementById('upload-bin-1099');
-
-        // todo - manage shadow display
-        let main_dropdown = document.getElementById('menu-'+ config_child_num);
-        let dropdown_shadow = document.getElementById('ext-gen2472');
-
         upload_bin.addEventListener('click', function(){
-            if (bin_box.style.display = "none") {
+            if (bin_box.style.display === "none") {
                 bin_box.style.display = "block";
                 //main_dropdown.style.visibility = "hidden";
                 //dropdown_shadow.style.visibility = "hidden";
@@ -169,22 +166,32 @@ function addUploadOption(config_child_num) {
     }
 }
 
-//Function to expand height of the configuration dropdown menu so you can see the new option
-//There's a bug here.  The bottom column of devices gets bigger but the dropdown doesn't...lol
-function expandDropdown(config_child_num) {
-    //Increase Length of Dropdown and Shadow, everything gets +28 height
-        console.log('expanding dropdown');
-        let dropdown_parent = document.getElementById('menu-' + config_child_num);
-        dropdown_parent.style.cssText += "height: 252px";
 
-        let dropdown_body = document.getElementById('menu-' + config_child_num + '-body');
-        dropdown_body.style.cssText += "height: 252px";
+//Function to expand height of the configuration dropdown menu. Everything gets +28 height
+function expandDropdown(config_child_num, height_calculated) {
+    console.log('expanding dropdown');
 
-        let dropdown_inner = document.getElementById('menu-' + config_child_num + '-innerCt');
-        dropdown_inner.style.cssText += "height: 252px";
+    // calculate the new height of the dropdown menu.  It's the height of the menu + 28
+    let dropdown_parent = document.getElementById('menu-' + config_child_num);
+    // Check to make sure we only calculate height once
+    if (dropdown_height  === 0) {
+        dropdown_height = (Number(dropdown_parent.style.height.split("px")[0]) + 28);
+        // position of the actual upload bin option = the dropdown height - 28px
+        upload_bin.style.cssText += "top: " + (dropdown_height - 28) + "px";
+        console.log("Height: " + dropdown_height.toString());
+    }
 
-        let dropdown_shadow = document.getElementsByClassName("x-css-shadow");
-        dropdown_shadow[0].style.cssText += "height: 248px"
+    // expand all the dropdown divs
+    dropdown_parent.style.cssText += "height: " + dropdown_height.toString() + "px";
+
+    let dropdown_body = document.getElementById('menu-' + config_child_num + '-body');
+    dropdown_body.style.cssText += "height: " + dropdown_height.toString() + "px";
+
+    let dropdown_inner = document.getElementById('menu-' + config_child_num + '-innerCt');
+    dropdown_inner.style.cssText += "height: " + dropdown_height.toString() + "px";
+
+    let dropdown_shadow = document.getElementsByClassName("x-css-shadow");
+    dropdown_shadow[0].style.cssText += "height: " + (dropdown_height - 4).toString() + "px";
 }
 
 function createUploadBox() {
