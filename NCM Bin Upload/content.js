@@ -1,3 +1,6 @@
+// test number to track height
+let dropdown_height = 0;
+
 // Find the router/devices view parent of the config menu
 async function findParent(time) {
 
@@ -90,7 +93,6 @@ function redraw(configuration_menu) {
 
 // Listen for menu clicks and respond accordingly
 function addDropdownListeners(configuration_menu) {
-
     // Calculate number of main configuration button.
     let configuration_menu_num = configuration_menu.id.split("-")[1];
     let configuration = document.getElementById('button-' + configuration_menu_num);
@@ -101,7 +103,6 @@ function addDropdownListeners(configuration_menu) {
 
     //listener for configuration button click
     configuration.addEventListener('click', function(){
-
         //Adds the upload bin option and expands the dropdown menu so you can see it
         addUploadOption(config_child_num);
         expandDropdown(config_child_num);
@@ -169,22 +170,31 @@ function addUploadOption(config_child_num) {
     }
 }
 
-//Function to expand height of the configuration dropdown menu so you can see the new option
-//There's a bug here.  The bottom column of devices gets bigger but the dropdown doesn't...lol
-function expandDropdown(config_child_num) {
-    //Increase Length of Dropdown and Shadow, everything gets +28 height
-        console.log('expanding dropdown');
-        let dropdown_parent = document.getElementById('menu-' + config_child_num);
-        dropdown_parent.style.cssText += "height: 252px";
 
-        let dropdown_body = document.getElementById('menu-' + config_child_num + '-body');
-        dropdown_body.style.cssText += "height: 252px";
+//Function to expand height of the configuration dropdown menu. Everything gets +28 height
+function expandDropdown(config_child_num, height_calculated) {
+    console.log('expanding dropdown');
 
-        let dropdown_inner = document.getElementById('menu-' + config_child_num + '-innerCt');
-        dropdown_inner.style.cssText += "height: 252px";
+    // calculate the new height of the dropdown menu.  It's the height of the menu + 28
+    let dropdown_parent = document.getElementById('menu-' + config_child_num);
 
-        let dropdown_shadow = document.getElementsByClassName("x-css-shadow");
-        dropdown_shadow[0].style.cssText += "height: 248px"
+    // Check to make sure we only calculate height once
+    if (dropdown_height  === 0) {
+        dropdown_height = (Number(dropdown_parent.style.height.split("px")[0]) + 28);
+        console.log("Height: " + dropdown_height.toString());
+    }
+
+    // expand all the dropdown divs
+    dropdown_parent.style.cssText += "height: " + dropdown_height.toString() + "px";
+
+    let dropdown_body = document.getElementById('menu-' + config_child_num + '-body');
+    dropdown_body.style.cssText += "height: " + dropdown_height.toString() + "px";
+
+    let dropdown_inner = document.getElementById('menu-' + config_child_num + '-innerCt');
+    dropdown_inner.style.cssText += "height: " + dropdown_height.toString() + "px";
+
+    let dropdown_shadow = document.getElementsByClassName("x-css-shadow");
+    dropdown_shadow[0].style.cssText += "height: " + (dropdown_height - 4).toString() + "px";
 }
 
 function createUploadBox() {
