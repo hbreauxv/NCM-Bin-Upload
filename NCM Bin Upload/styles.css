@@ -12,6 +12,17 @@
   background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
 
+.bin_box_container {
+  display: none;
+  position: fixed;
+  width: 450px;
+  height: 175px;
+  right: auto;
+  left: 40%;
+  top: 30%;
+  z-index: 19000;
+}
+
 .modal-header {
   padding: 2px 16px;
   background-color: #333e48;
@@ -79,3 +90,4 @@
     background: black;
     z-index: 18996;
 }
+

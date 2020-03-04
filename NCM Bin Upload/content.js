@@ -191,7 +191,7 @@ function expandDropdown(config_child_num) {
 function createUploadBox() {
     //Create bin upload dialog box
     let bin_box = document.createElement('div');
-    bin_box.style = 'display: none; position: fixed; width: 450px; height: 175px; right: auto; left: 40%; top: 30%; z-index: 19000;';
+    bin_box.setAttribute('class', 'bin_box_container');
     bin_box.id = 'upload-bin-1099';
     bin_box.tabindex = '-1';
     bin_box.innerHTML = `
