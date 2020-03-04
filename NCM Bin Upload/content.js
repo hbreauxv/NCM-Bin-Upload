@@ -1,4 +1,4 @@
-// test number to track height
+// variable to track height of dropdown menu
 let dropdown_height = 0;
 
 // Find the router/devices view parent of the config menu
