@@ -117,7 +117,6 @@ function addDropdownListeners(configuration_menu) {
 var upload_bin = document.createElement('div');
 upload_bin.setAttribute('class', 'x-component x-box-item x-component-default x-menu-item');
 upload_bin.id = "menuitem-binupload";
-upload_bin.style = "right: auto; left: 0px; top: 224px; margin: 0px; width: 163px;";
 upload_bin.innerHTML = `
     <a id="menuitem-1073-itemEl" class="x-menu-item-link" href="#" hidefocus="true" unselectable="on" data-qtip="">
         <div role="img" id="menuitem-1073-iconEl" class="x-menu-item-icon gear-icon " style="">
@@ -191,7 +190,7 @@ function expandDropdown(config_child_num) {
 function createUploadBox() {
     //Create bin upload dialog box
     let bin_box = document.createElement('div');
-    bin_box.style = 'display: none; position: fixed; width: 450px; height: 175px; right: auto; left: 40%; top: 30%; z-index: 19000;';
+    bin_box.setAttribute('class', 'bin_box_container');
     bin_box.id = 'upload-bin-1099';
     bin_box.tabindex = '-1';
     bin_box.innerHTML = `
