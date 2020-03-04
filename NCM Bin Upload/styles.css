@@ -91,3 +91,10 @@
     z-index: 18996;
 }
 
+#menuitem-binupload {
+  right: auto;
+  left: 0px;
+  top: 224px;
+  margin: 0px;
+  width: 163px;
+}

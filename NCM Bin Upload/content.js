@@ -117,7 +117,6 @@ function addDropdownListeners(configuration_menu) {
 var upload_bin = document.createElement('div');
 upload_bin.setAttribute('class', 'x-component x-box-item x-component-default x-menu-item');
 upload_bin.id = "menuitem-binupload";
-upload_bin.style = "right: auto; left: 0px; top: 224px; margin: 0px; width: 163px;";
 upload_bin.innerHTML = `
     <a id="menuitem-1073-itemEl" class="x-menu-item-link" href="#" hidefocus="true" unselectable="on" data-qtip="">
         <div role="img" id="menuitem-1073-iconEl" class="x-menu-item-icon gear-icon " style="">
