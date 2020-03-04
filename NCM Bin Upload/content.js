@@ -118,6 +118,7 @@ function addDropdownListeners(configuration_menu) {
 var upload_bin = document.createElement('div');
 upload_bin.setAttribute('class', 'x-component x-box-item x-component-default x-menu-item');
 upload_bin.id = "menuitem-binupload";
+upload_bin.style.cssText = "right: auto; left: 0px; margin: 0px; width: 163px;";
 upload_bin.innerHTML = `
     <a id="menuitem-1073-itemEl" class="x-menu-item-link" href="#" hidefocus="true" unselectable="on" data-qtip="">
         <div role="img" id="menuitem-1073-iconEl" class="x-menu-item-icon gear-icon " style="">
@@ -151,13 +152,8 @@ function addUploadOption(config_child_num) {
 
         // Event listener for opening dialog box and hidding dropdown
         let bin_box = document.getElementById('upload-bin-1099');
-
-        // todo - manage shadow display
-        let main_dropdown = document.getElementById('menu-'+ config_child_num);
-        let dropdown_shadow = document.getElementById('ext-gen2472');
-
         upload_bin.addEventListener('click', function(){
-            if (bin_box.style.display = "none") {
+            if (bin_box.style.display === "none") {
                 bin_box.style.display = "block";
                 //main_dropdown.style.visibility = "hidden";
                 //dropdown_shadow.style.visibility = "hidden";
@@ -177,10 +173,11 @@ function expandDropdown(config_child_num, height_calculated) {
 
     // calculate the new height of the dropdown menu.  It's the height of the menu + 28
     let dropdown_parent = document.getElementById('menu-' + config_child_num);
-
     // Check to make sure we only calculate height once
     if (dropdown_height  === 0) {
         dropdown_height = (Number(dropdown_parent.style.height.split("px")[0]) + 28);
+        // position of the actual upload bin option = the dropdown height - 28px
+        upload_bin.style.cssText += "top: " + (dropdown_height - 28) + "px";
         console.log("Height: " + dropdown_height.toString());
     }
 
