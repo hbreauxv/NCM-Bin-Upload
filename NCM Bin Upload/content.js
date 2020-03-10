@@ -72,6 +72,7 @@ function run(configuration_menu) {
     // Add the listeners to insert the new upload bin button into the configuration dropdown
     addDropdownListeners(configuration_menu);
 
+
     // Add listeners to re-add all of our custom elements when returning to the devices page
     document.getElementById('app-devices-button').addEventListener('click', function(){
         // Add a listener so that we search for the configuration menu every time the Devices page is clicked/gone to
@@ -236,6 +237,7 @@ function createUploadBox() {
     uploadFileButton.onclick = readAndUpload;
 }
 
+// todo - long function
 // Reads and uploads the bin file.  Called when the Upload File button is clicked.
 function readAndUpload(){
 
@@ -299,6 +301,49 @@ function readAndUpload(){
     }
 }
 
+function decompress(file) {
+    try {
+        //decompress the bin file.  bins are compressed using zlib and the pako library inflates them to give the str result
+        let decompressed = pako.inflate(file.target.result);
+        let strData = String.fromCharCode.apply(null, new Uint16Array(decompressed));
+
+        //decode the decompressed bin as json
+        let binJson = JSON.parse(strData);
+
+        // new var that stores the config in the format that NCM wants
+        let ncmJson = {"configuration": [binJson[0]["config"], [binJson[1]]]};
+
+        // remove the product name from the bin.  Turning json into string and looking for "product_name" is the shortest
+        // method i've found for searching for the keys existence.
+        if (JSON.stringify(ncmJson).includes("product_name")) {
+            delete ncmJson["configuration"][0]["system"]["admin"].product_name
+        }
+
+        // remove ecm version from the bin.
+        if (JSON.stringify(ncmJson).includes("ecm")) {
+            delete ncmJson["configuration"][0].ecm
+        }
+
+        // Upload to ncm
+        console.log(ncmJson);
+        putConfig(ncmJson);
+
+        //tell user upload request has begun
+        document.getElementById('upload-modal-body-1099').innerHTML = "<p>Bin upload in progress...</p>";
+
+        // Disable upload button
+        let uploadFileButton = document.getElementById("upload-bin-button");
+        uploadFileButton.disabled = true;
+    }
+    catch(err) {
+        console.log(err);
+        document.getElementById('upload-modal-body-1099').innerHTML = "<p>Error occurred: " + String(err) + "</p>";
+        document.getElementById("upload-bin-button").disabled = true;
+    }
+}
+
+
+// todo - long function
 //This function sends your configuration to a router
 function putConfig(ncmJson) {
 
