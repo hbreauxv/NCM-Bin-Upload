@@ -72,6 +72,7 @@ function run(configuration_menu) {
     // Add the listeners to insert the new upload bin button into the configuration dropdown
     addDropdownListeners(configuration_menu);
 
+
     // Add listeners to re-add all of our custom elements when returning to the devices page
     document.getElementById('app-devices-button').addEventListener('click', function(){
         // Add a listener so that we search for the configuration menu every time the Devices page is clicked/gone to
@@ -145,29 +146,26 @@ function addUploadOption(config_child_num) {
     //Create upload bin menu item
     else {
         //Find dropdown
-        let dropdown = document.getElementById("menu-"+ config_child_num +"-targetEl");
+        let dropdown_inner = document.getElementById("menu-"+ config_child_num +"-targetEl");
 
         //Add upload bin item to dropdown
-        dropdown.appendChild(upload_bin);
+        dropdown_inner.appendChild(upload_bin);
 
-        // Event listener for opening dialog box and hidding dropdown
+        // Event listener for opening dialog box and hiding dropdown
         let bin_box = document.getElementById('upload-bin-1099');
         upload_bin.addEventListener('click', function(){
-            if (bin_box.style.display === "none") {
-                bin_box.style.display = "block";
-                //main_dropdown.style.visibility = "hidden";
-                //dropdown_shadow.style.visibility = "hidden";
-            }
-            else {
-                bin_box.style.display = "none"
-            }
+            bin_box.style.display = "block";
+            // hide config menu
+            document.getElementById("menu-" + config_child_num).style.visibility = "hidden";
+            // hide shadow
+            document.getElementsByClassName("x-css-shadow")[0].style.display = "none";
         });
 
     }
 }
 
 
-//Function to expand height of the configuration dropdown menu. Everything gets +28 height
+// Function to expand height of the configuration dropdown menu. Everything gets +28 height
 function expandDropdown(config_child_num, height_calculated) {
     console.log('expanding dropdown');
 
@@ -236,6 +234,7 @@ function createUploadBox() {
     uploadFileButton.onclick = readAndUpload;
 }
 
+// todo - long function
 // Reads and uploads the bin file.  Called when the Upload File button is clicked.
 function readAndUpload(){
 
@@ -299,6 +298,49 @@ function readAndUpload(){
     }
 }
 
+function decompress(file) {
+    try {
+        //decompress the bin file.  bins are compressed using zlib and the pako library inflates them to give the str result
+        let decompressed = pako.inflate(file.target.result);
+        let strData = String.fromCharCode.apply(null, new Uint16Array(decompressed));
+
+        //decode the decompressed bin as json
+        let binJson = JSON.parse(strData);
+
+        // new var that stores the config in the format that NCM wants
+        let ncmJson = {"configuration": [binJson[0]["config"], [binJson[1]]]};
+
+        // remove the product name from the bin.  Turning json into string and looking for "product_name" is the shortest
+        // method i've found for searching for the keys existence.
+        if (JSON.stringify(ncmJson).includes("product_name")) {
+            delete ncmJson["configuration"][0]["system"]["admin"].product_name
+        }
+
+        // remove ecm version from the bin.
+        if (JSON.stringify(ncmJson).includes("ecm")) {
+            delete ncmJson["configuration"][0].ecm
+        }
+
+        // Upload to ncm
+        console.log(ncmJson);
+        putConfig(ncmJson);
+
+        //tell user upload request has begun
+        document.getElementById('upload-modal-body-1099').innerHTML = "<p>Bin upload in progress...</p>";
+
+        // Disable upload button
+        let uploadFileButton = document.getElementById("upload-bin-button");
+        uploadFileButton.disabled = true;
+    }
+    catch(err) {
+        console.log(err);
+        document.getElementById('upload-modal-body-1099').innerHTML = "<p>Error occurred: " + String(err) + "</p>";
+        document.getElementById("upload-bin-button").disabled = true;
+    }
+}
+
+
+// todo - long function
 //This function sends your configuration to a router
 function putConfig(ncmJson) {
 
