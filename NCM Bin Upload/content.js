@@ -151,17 +151,12 @@ function addUploadOption(config_child_num) {
         //Add upload bin item to dropdown
         dropdown.appendChild(upload_bin);
 
-        // Event listener for opening dialog box and hidding dropdown
+        // Event listener for opening dialog box and hiding dropdown
         let bin_box = document.getElementById('upload-bin-1099');
         upload_bin.addEventListener('click', function(){
-            if (bin_box.style.display === "none") {
-                bin_box.style.display = "block";
-                //main_dropdown.style.visibility = "hidden";
-                //dropdown_shadow.style.visibility = "hidden";
-            }
-            else {
-                bin_box.style.display = "none"
-            }
+            bin_box.style.display = "block";
+            //main_dropdown.style.visibility = "hidden";
+            //dropdown_shadow.style.visibility = "hidden";
         });
 
     }
