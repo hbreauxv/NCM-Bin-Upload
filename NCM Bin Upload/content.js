@@ -146,17 +146,19 @@ function addUploadOption(config_child_num) {
     //Create upload bin menu item
     else {
         //Find dropdown
-        let dropdown = document.getElementById("menu-"+ config_child_num +"-targetEl");
+        let dropdown_inner = document.getElementById("menu-"+ config_child_num +"-targetEl");
 
         //Add upload bin item to dropdown
-        dropdown.appendChild(upload_bin);
+        dropdown_inner.appendChild(upload_bin);
 
         // Event listener for opening dialog box and hiding dropdown
         let bin_box = document.getElementById('upload-bin-1099');
         upload_bin.addEventListener('click', function(){
             bin_box.style.display = "block";
-            //main_dropdown.style.visibility = "hidden";
-            //dropdown_shadow.style.visibility = "hidden";
+            // hide config menu
+            document.getElementById("menu-" + config_child_num).style.visibility = "hidden";
+            // hide shadow
+            document.getElementsByClassName("x-css-shadow")[0].style.visibility = "hidden";
         });
 
     }
