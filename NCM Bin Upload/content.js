@@ -158,14 +158,14 @@ function addUploadOption(config_child_num) {
             // hide config menu
             document.getElementById("menu-" + config_child_num).style.visibility = "hidden";
             // hide shadow
-            document.getElementsByClassName("x-css-shadow")[0].style.visibility = "hidden";
+            document.getElementsByClassName("x-css-shadow")[0].style.display = "none";
         });
 
     }
 }
 
 
-//Function to expand height of the configuration dropdown menu. Everything gets +28 height
+// Function to expand height of the configuration dropdown menu. Everything gets +28 height
 function expandDropdown(config_child_num, height_calculated) {
     console.log('expanding dropdown');
 
