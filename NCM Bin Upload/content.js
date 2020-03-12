@@ -3,9 +3,7 @@ let dropdown_height = 0;
 
 // Find the router/devices view parent of the config menu
 async function findParent(time) {
-
     console.log('search for parent');
-
     let divTags = document.getElementsByTagName("div");
     let parent;
 
@@ -30,10 +28,7 @@ async function findParent(time) {
 }
 
 async function findChild(text, span_class, parent, time) {
-
     console.log('searching for child');
-    console.log(parent);
-
     let spanTags = document.getElementsByTagName("span");
     let child;
 
@@ -71,7 +66,6 @@ function run(configuration_menu) {
 
     // Add the listeners to insert the new upload bin button into the configuration dropdown
     addDropdownListeners(configuration_menu);
-
 
     // Add listeners to re-add all of our custom elements when returning to the devices page
     document.getElementById('app-devices-button').addEventListener('click', function(){
@@ -234,7 +228,6 @@ function createUploadBox() {
     uploadFileButton.onclick = readAndUpload;
 }
 
-// todo - long function
 // Reads and uploads the bin file.  Called when the Upload File button is clicked.
 function readAndUpload(){
 
@@ -252,37 +245,7 @@ function readAndUpload(){
         // Decodes and sends the config to NCM
         fReader.onload = function (e) {
             try {
-                //decompress the bin file.  bins are compressed using zlib and the pako library inflates them to give the str result
-                let decompressed = pako.inflate(e.target.result);
-                let strData = String.fromCharCode.apply(null, new Uint16Array(decompressed));
-
-                //decode the decompressed bin as json
-                let binJson = JSON.parse(strData);
-
-                // new var that stores the config in the format that NCM wants
-                let ncmJson = {"configuration": [binJson[0]["config"], [binJson[1]]]};
-
-                // remove the product name from the bin.  Turning json into string and looking for "product_name" is the shortest
-                // method i've found for searching for the keys existence.
-                if (JSON.stringify(ncmJson).includes("product_name")) {
-                    delete ncmJson["configuration"][0]["system"]["admin"].product_name
-                }
-
-                // remove ecm version from the bin.
-                if (JSON.stringify(ncmJson).includes("ecm")) {
-                    delete ncmJson["configuration"][0].ecm
-                }
-
-                // Upload to ncm
-                console.log(ncmJson);
-                putConfig(ncmJson);
-
-                //tell user upload request has begun
-                document.getElementById('upload-modal-body-1099').innerHTML = "<p>Bin upload in progress...</p>";
-
-                // Disable upload button
-                let uploadFileButton = document.getElementById("upload-bin-button");
-                uploadFileButton.disabled = true;
+                decompress(e)
             }
             catch(err) {
                 console.log(err);
@@ -299,60 +262,50 @@ function readAndUpload(){
 }
 
 function decompress(file) {
-    try {
-        //decompress the bin file.  bins are compressed using zlib and the pako library inflates them to give the str result
-        let decompressed = pako.inflate(file.target.result);
-        let strData = String.fromCharCode.apply(null, new Uint16Array(decompressed));
+    //decompress the bin file.  bins are compressed using zlib and the pako library inflates them to give the str result
+    let decompressed = pako.inflate(file.target.result);
+    let strData = String.fromCharCode.apply(null, new Uint16Array(decompressed));
 
-        //decode the decompressed bin as json
-        let binJson = JSON.parse(strData);
+    //decode the decompressed bin as json
+    let binJson = JSON.parse(strData);
 
-        // new var that stores the config in the format that NCM wants
-        let ncmJson = {"configuration": [binJson[0]["config"], [binJson[1]]]};
+    // new var that stores the config in the format that NCM wants
+    let ncmJson = {"configuration": [binJson[0]["config"], [binJson[1]]]};
 
-        // remove the product name from the bin.  Turning json into string and looking for "product_name" is the shortest
-        // method i've found for searching for the keys existence.
-        if (JSON.stringify(ncmJson).includes("product_name")) {
-            delete ncmJson["configuration"][0]["system"]["admin"].product_name
-        }
-
-        // remove ecm version from the bin.
-        if (JSON.stringify(ncmJson).includes("ecm")) {
-            delete ncmJson["configuration"][0].ecm
-        }
-
-        // Upload to ncm
-        console.log(ncmJson);
-        putConfig(ncmJson);
-
-        //tell user upload request has begun
-        document.getElementById('upload-modal-body-1099').innerHTML = "<p>Bin upload in progress...</p>";
-
-        // Disable upload button
-        let uploadFileButton = document.getElementById("upload-bin-button");
-        uploadFileButton.disabled = true;
+    // remove the product name from the bin.  Turning json into string and looking for "product_name" is the shortest
+    // method i've found for searching for the keys existence.
+    if (JSON.stringify(ncmJson).includes("product_name")) {
+        delete ncmJson["configuration"][0]["system"]["admin"].product_name
     }
-    catch(err) {
-        console.log(err);
-        document.getElementById('upload-modal-body-1099').innerHTML = "<p>Error occurred: " + String(err) + "</p>";
-        document.getElementById("upload-bin-button").disabled = true;
+
+    // remove ecm version from the bin.
+    if (JSON.stringify(ncmJson).includes("ecm")) {
+        delete ncmJson["configuration"][0].ecm
     }
+
+    // Upload to ncm
+    console.log(ncmJson);
+    putConfig(ncmJson);
+
+    //tell user upload request has begun
+    document.getElementById('upload-modal-body-1099').innerHTML = "<p>Bin upload in progress...</p>";
+
+    // Disable upload button
+    let uploadFileButton = document.getElementById("upload-bin-button");
+    uploadFileButton.disabled = true;
 }
 
-
-// todo - long function
 //This function sends your configuration to a router
 function putConfig(ncmJson) {
-
-    //find selected router
-    var selected_router = document.getElementsByClassName("x-grid-row-selected");
+    // find selected router
+    let selected_router = document.getElementsByClassName("x-grid-row-selected");
     console.log(selected_router);
     selected_router = selected_router[0]["dataset"]["recordid"];
 
-    //Send request to create configuration_editor endpoint so that the configuration can be edited
+    // Get requests to the configuration_managers endpoint to find the configuration uri
     let getConfigManagerId = new Promise((resolve, reject) => {
         setTimeout( function() {
-            var xhr = new XMLHttpRequest();
+            let xhr = new XMLHttpRequest();
             xhr.open("GET", "https://www.cradlepointecm.com/api/v1/configuration_managers/?router.id=" + selected_router, true);
             xhr.send();
             console.log(xhr.responseText);
@@ -362,44 +315,36 @@ function putConfig(ncmJson) {
         }, 500);
     });
 
-    //After editor is created, parse the editor uri
+    // Parse the configuration url from the response
     getConfigManagerId.then( (xhr_response) => {
-
-        //Parse response to find the configuration_managers uri. xhr_response = the response of a succesful post to create a config_editor in createConfigEditor
+        // Parse response to find the configuration_managers uri
         console.log(xhr_response);
-        var response = JSON.parse(xhr_response);
-        var resource_uri = JSON.stringify(response["data"][0]["resource_uri"]);
-        var url = "https://www.cradlepointecm.com" + resource_uri.replace(/"/g, '');
-        console.log(url);
+        let response = JSON.parse(xhr_response);
+        let resource_uri = JSON.stringify(response["data"][0]["resource_uri"]);
+        let url = "https://www.cradlepointecm.com" + resource_uri.replace(/"/g, '');
 
-        //Create request to send config to router.
+        // Create request to send config to router.
         return new Promise((resolve, reject) => {
             setTimeout( function() {
-                var xhrPut = new XMLHttpRequest();
+                let xhrPut = new XMLHttpRequest();
                 xhrPut.open("PUT", url, true);
                 xhrPut.setRequestHeader("Content-Type", "application/json");
-
-                //Send data
+                // Send data
                 xhrPut.send(JSON.stringify(ncmJson));
-
                 // Return result to next .then function
                 xhrPut.onload = () => resolve(xhrPut);
                 xhrPut.onerror = () => reject(xhrPut);
-
-                //log results
+                // log results
                 console.log(xhrPut);
             }, 500)
         });
-
     }).then( function(xhrPut) {
-
-        //get bin_box so we can fill it with the result of the put
+        // get bin_box so we can fill it with the result of the put
         let bin_box_modal = document.getElementById("upload-modal-body-1099")
         console.log(xhrPut.statusText);
 
         //Print the result of the upload
         if (xhrPut.statusText === "Accepted") {
-
             bin_box_modal.innerHTML = "<p> Upload Result: " + xhrPut.statusText + "!</p>"
         } else {
             bin_box_modal.innerHTML = `<p> Upload Result: ` + xhrPut.statusText + `</p>
@@ -407,21 +352,17 @@ function putConfig(ncmJson) {
             <p>Response details: ` + xhrPut.responseText + `</p>
             `
         }
-
         // Clear the message after the user closes the modal-body
         let closeButton = document.getElementById("close-bin-1099");
-
         function resetText() {
             // reset inner text
             bin_box_modal.innerHTML = `<p>Select Bin File</p>
             <input type="file" id="bin_file" name="bin"></input>`;
-
             //make upload bin button clickable again
             document.getElementById("upload-bin-button").disabled = false;
-
+            // Remove the listener for this function
             closeButton.removeEventListener("click", resetText)
         }
-
         closeButton.addEventListener("click", resetText);
     });
 }
