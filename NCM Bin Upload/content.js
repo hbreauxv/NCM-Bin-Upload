@@ -56,7 +56,7 @@ async function findChild(text, span_class, parent, time) {
 
 /* Find the Configuration Menu by first finding the Routers page parent and then the config menu child of it
 We have to find the parent first otherwise the Access Points configuration menu gets chosen instead */
-findParent(5000)
+findParent(1000)
     .then(parent => findChild('Configuration', "x-btn-inner x-btn-inner-center", parent, 5000)
         .then(child => run(child))); //Pass the config menu child to our run function
 
@@ -70,7 +70,7 @@ function run(configuration_menu) {
     // Add listeners to re-add all of our custom elements when returning to the devices page
     document.getElementById('app-devices-button').addEventListener('click', function(){
         // Add a listener so that we search for the configuration menu every time the Devices page is clicked/gone to
-        findParent(5000)
+        findParent(1000)
             .then(parent => findChild('Configuration', "x-btn-inner x-btn-inner-center", parent, 5000)
                 .then(child => redraw(child)));
     });
