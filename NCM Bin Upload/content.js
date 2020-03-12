@@ -321,9 +321,9 @@ function putConfig(ncmJson) {
         }, 500);
     });
 
-    //After editor is created, parse the editor uri
+    // Parse the configuration url from the response
     getConfigManagerId.then( (xhr_response) => {
-        //Parse response to find the configuration_managers uri. xhr_response = the response of a succesful post to create a config_editor in createConfigEditor
+        // Parse response to find the configuration_managers uri
         console.log(xhr_response);
         let response = JSON.parse(xhr_response);
         let resource_uri = JSON.stringify(response["data"][0]["resource_uri"]);
@@ -345,7 +345,7 @@ function putConfig(ncmJson) {
             }, 500)
         });
     }).then( function(xhrPut) {
-        //get bin_box so we can fill it with the result of the put
+        // get bin_box so we can fill it with the result of the put
         let bin_box_modal = document.getElementById("upload-modal-body-1099")
         console.log(xhrPut.statusText);
 
