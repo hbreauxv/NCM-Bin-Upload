@@ -3,9 +3,7 @@ let dropdown_height = 0;
 
 // Find the router/devices view parent of the config menu
 async function findParent(time) {
-
     console.log('search for parent');
-
     let divTags = document.getElementsByTagName("div");
     let parent;
 
@@ -30,10 +28,7 @@ async function findParent(time) {
 }
 
 async function findChild(text, span_class, parent, time) {
-
     console.log('searching for child');
-    console.log(parent);
-
     let spanTags = document.getElementsByTagName("span");
     let child;
 
@@ -71,7 +66,6 @@ function run(configuration_menu) {
 
     // Add the listeners to insert the new upload bin button into the configuration dropdown
     addDropdownListeners(configuration_menu);
-
 
     // Add listeners to re-add all of our custom elements when returning to the devices page
     document.getElementById('app-devices-button').addEventListener('click', function(){
@@ -308,7 +302,7 @@ function putConfig(ncmJson) {
     console.log(selected_router);
     selected_router = selected_router[0]["dataset"]["recordid"];
 
-    // Send request to create configuration_editor endpoint so that the configuration can be edited
+    // Get requests to the configuration_managers endpoint to find the configuration uri
     let getConfigManagerId = new Promise((resolve, reject) => {
         setTimeout( function() {
             let xhr = new XMLHttpRequest();
