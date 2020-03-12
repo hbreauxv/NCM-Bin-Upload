@@ -234,7 +234,6 @@ function createUploadBox() {
     uploadFileButton.onclick = readAndUpload;
 }
 
-// todo - long function
 // Reads and uploads the bin file.  Called when the Upload File button is clicked.
 function readAndUpload(){
 
@@ -302,20 +301,17 @@ function decompress(file) {
     uploadFileButton.disabled = true;
 }
 
-
-// todo - long function
 //This function sends your configuration to a router
 function putConfig(ncmJson) {
-
-    //find selected router
-    var selected_router = document.getElementsByClassName("x-grid-row-selected");
+    // find selected router
+    let selected_router = document.getElementsByClassName("x-grid-row-selected");
     console.log(selected_router);
     selected_router = selected_router[0]["dataset"]["recordid"];
 
-    //Send request to create configuration_editor endpoint so that the configuration can be edited
+    // Send request to create configuration_editor endpoint so that the configuration can be edited
     let getConfigManagerId = new Promise((resolve, reject) => {
         setTimeout( function() {
-            var xhr = new XMLHttpRequest();
+            let xhr = new XMLHttpRequest();
             xhr.open("GET", "https://www.cradlepointecm.com/api/v1/configuration_managers/?router.id=" + selected_router, true);
             xhr.send();
             console.log(xhr.responseText);
@@ -327,42 +323,34 @@ function putConfig(ncmJson) {
 
     //After editor is created, parse the editor uri
     getConfigManagerId.then( (xhr_response) => {
-
         //Parse response to find the configuration_managers uri. xhr_response = the response of a succesful post to create a config_editor in createConfigEditor
         console.log(xhr_response);
-        var response = JSON.parse(xhr_response);
-        var resource_uri = JSON.stringify(response["data"][0]["resource_uri"]);
-        var url = "https://www.cradlepointecm.com" + resource_uri.replace(/"/g, '');
-        console.log(url);
+        let response = JSON.parse(xhr_response);
+        let resource_uri = JSON.stringify(response["data"][0]["resource_uri"]);
+        let url = "https://www.cradlepointecm.com" + resource_uri.replace(/"/g, '');
 
-        //Create request to send config to router.
+        // Create request to send config to router.
         return new Promise((resolve, reject) => {
             setTimeout( function() {
-                var xhrPut = new XMLHttpRequest();
+                let xhrPut = new XMLHttpRequest();
                 xhrPut.open("PUT", url, true);
                 xhrPut.setRequestHeader("Content-Type", "application/json");
-
-                //Send data
+                // Send data
                 xhrPut.send(JSON.stringify(ncmJson));
-
                 // Return result to next .then function
                 xhrPut.onload = () => resolve(xhrPut);
                 xhrPut.onerror = () => reject(xhrPut);
-
-                //log results
+                // log results
                 console.log(xhrPut);
             }, 500)
         });
-
     }).then( function(xhrPut) {
-
         //get bin_box so we can fill it with the result of the put
         let bin_box_modal = document.getElementById("upload-modal-body-1099")
         console.log(xhrPut.statusText);
 
         //Print the result of the upload
         if (xhrPut.statusText === "Accepted") {
-
             bin_box_modal.innerHTML = "<p> Upload Result: " + xhrPut.statusText + "!</p>"
         } else {
             bin_box_modal.innerHTML = `<p> Upload Result: ` + xhrPut.statusText + `</p>
@@ -370,21 +358,17 @@ function putConfig(ncmJson) {
             <p>Response details: ` + xhrPut.responseText + `</p>
             `
         }
-
         // Clear the message after the user closes the modal-body
         let closeButton = document.getElementById("close-bin-1099");
-
         function resetText() {
             // reset inner text
             bin_box_modal.innerHTML = `<p>Select Bin File</p>
             <input type="file" id="bin_file" name="bin"></input>`;
-
             //make upload bin button clickable again
             document.getElementById("upload-bin-button").disabled = false;
-
+            // Remove the listener for this function
             closeButton.removeEventListener("click", resetText)
         }
-
         closeButton.addEventListener("click", resetText);
     });
 }
